@@ -1,0 +1,295 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <stdbool.h>
+
+//#define elt_type float
+//#define elt_fmt  "%f"
+
+//#define elt_type double
+//#define elt_fmt  "%lf"
+
+#define elt_type int
+#define elt_fmt  "%d"
+
+//#define elt_type char
+//#define elt_fmt  "%c"
+
+//#define elt_type bool
+//#define elt_fmt  "%d"
+
+struct s_cell
+{
+  elt_type            val; // valeur contenue dans ce maillon
+  struct s_cell *addr_next; // pointeur contenant l'adresse
+                            // du maillon suivant
+};
+
+typedef struct s_cell cell;
+
+// *************
+// amelioration: creation d'une structure de donnée list
+// qui encapsule les 2 informations: l'adresse du premier
+// maillon + la taille de la liste
+// la taille est ainis mise à jour des que la structure
+// est modifiée (suppression ou ajour d'un element)
+// ce qui evite de recalculer trop souvent la taille
+struct s_list
+{
+  int  siz;
+  cell         *addr_first;
+};
+
+typedef struct s_list list;
+
+list *create_list()
+{
+  list *l = NULL;
+  l = malloc(sizeof(list));
+  assert(l != NULL);
+  l->siz = 0;
+  l->addr_first = NULL;
+  return l;
+}
+
+int get_length(list *l)
+{
+  assert(l != NULL);
+  return l->siz;
+}
+//***********************************//
+
+
+void push(elt_type v, list *l)
+{
+  assert(l != NULL);
+  cell *c = l->addr_first;
+
+  cell *c_new = malloc(sizeof(cell));
+  c_new->val = v;
+  c_new->addr_next = c;
+  l->addr_first = c_new;
+
+  l->siz = l->siz + 1;
+  return;
+}
+
+
+void print_list(list *l)
+{
+  cell *c = l->addr_first;
+
+  printf("%d elements: ", l->siz);
+  while (c != NULL)
+  {
+    printf(elt_fmt, c->val);
+    printf(" ");
+    c = c->addr_next;
+  }
+  printf("\n");
+
+  return;
+}
+
+elt_type get_ith(unsigned int i, list *l)
+{
+  assert(l != NULL);
+  cell *c = l->addr_first;
+  for (unsigned int j = 0; j < i; j++)
+  {
+    assert(c != NULL);
+    c = c->addr_next;
+  }
+  assert(c != NULL);
+
+  return c->val;
+}
+
+void delete_ith(unsigned int i, list *l)
+{
+  assert(l != NULL);
+  assert(i < l->siz);
+  
+  cell *c = NULL;
+  
+  if (i == 0)
+  {
+    c = l->addr_first;
+    assert(c != NULL);
+    l->addr_first = c->addr_next;
+    l->siz = l->siz - 1;
+    free(c);
+    return;
+  }
+
+  
+  c   = l->addr_first;
+  cell *prv = NULL;
+  cell *nxt = NULL;
+
+ 
+  for (unsigned int j = 0; j < i; j++)
+  {
+    assert(c != NULL);
+    prv = c;
+    c = c->addr_next;
+  }
+
+  assert(c != NULL);  
+  nxt = c->addr_next;
+  prv->addr_next = nxt;
+
+  free(c);
+  l->siz = l->siz -1;
+
+  return;
+}
+
+// calcul de la longueur courante de la liste
+int length(list *l)
+{
+  assert(l != NULL);
+  cell *c = l->addr_first;
+  int cpt = 0;
+  
+  while (c != NULL)
+  {
+    cpt = cpt + 1;
+    c = c->addr_next;
+  }
+
+  l->siz = cpt;
+  return cpt;
+}
+
+
+
+void insert_ith(unsigned int i, int v, list *l)
+{
+  assert(l != NULL);
+  assert(i <= l->siz);
+  
+  cell *c_new = NULL;
+  
+  if (i == 0)
+  {
+    c_new = malloc(sizeof(cell));
+    c_new->val = v;
+    c_new->addr_next = l->addr_first;
+    l->addr_first = c_new;
+    l->siz = l->siz + 1;
+    return;
+  }
+
+  cell *c = l->addr_first;
+  cell *prv = NULL;
+  for (unsigned int j = 0; j < i; j++)
+  {
+    assert(c != NULL);
+    prv = c;
+    c = c->addr_next;
+  }
+
+  c_new = malloc(sizeof(cell));
+  c_new->val = v;
+  c_new->addr_next = c;
+  prv->addr_next = c_new;
+  l->siz = l->siz + 1;
+  return;
+}
+
+// le passage par adresse est nécessaire pour être certain
+// de bien remettre l'adresse de la liste NULL
+void free_list(list **addr_l)
+{
+  list *l = *addr_l;
+  cell *c = l->addr_first;
+  cell *tmp = NULL;
+  
+  while (c != NULL)
+  {
+    tmp = c;
+    c = c->addr_next;
+    free(tmp);
+  }
+  free(l);
+  *addr_l = NULL;
+
+  return;
+}
+
+
+// attention: cette fonction a un effet de bord: l1 est modifiée
+// en sortie de la fonction!!!
+list *concatenate(list *l1, list *l2)
+{
+  if (l2 == NULL)
+    return l1;
+  if (l1 == NULL)
+    return l2;
+  
+  cell *c = l1->addr_first;
+  if (c == NULL)
+    return l2;
+
+  cell *prv = NULL;
+  
+  while (c != NULL)
+  {
+    prv = c;
+    c = c->addr_next;
+  }
+  prv->addr_next = l2->addr_first;
+
+  l1->siz = l1->siz + l2->siz;
+  return l1;
+}
+
+// tests en dur dans le main
+int main(void)
+{
+  list *l = create_list();
+
+  push(5, l);
+  push(6, l);
+  
+  print_list(l);
+  printf("%d", get_ith(0, l));
+  print_list(l);
+  push(7, l);
+  push(-1, l);
+  push(3, l);
+  print_list(l);
+
+  printf("Valeur %d: %d\n", 2, get_ith(2, l));
+  insert_ith(3, 31, l);
+  print_list(l);
+  printf("get=%d\n", get_ith(0, l));
+  delete_ith(0, l);
+  print_list(l);
+  delete_ith(2, l);
+  printf("Liste l: \n");
+  print_list(l);
+
+  
+  list *l2 = create_list();
+  push(25, l2);
+  push(36, l2);
+  printf("Liste l2: \n");
+  print_list(l2);
+
+  printf("Concatenation: \n");
+  print_list(concatenate(l, l2));
+  printf("La liste l a été modifiée: \n");
+  print_list(l);
+  
+  printf("get=%d\n", get_ith(0, l));
+  delete_ith(0, l);
+  printf("get=%d\n", get_ith(0, l));
+  
+  free_list(&l);
+  free(l2);
+  
+  return 0;
+
+}

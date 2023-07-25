@@ -1,0 +1,358 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{tkz-tab}
+\begin{document}
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\node[noeud,label=330:$-1$] {8}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{{edge from parent[draw=none]}}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\node[noeud,label=330:$0$] {7}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud,label=330:$1$] {7}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$1$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud,label=330:$1$] {7}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {11}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud,label=330:$0$] {7}
+child
+{node[noeud,label=330:$-1$] {3}
+child
+{node[noeud,label=330:$0$] {2}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {11}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud,label=330:$0$] {7}
+child
+{node[noeud,label=330:$0$] {2}
+child
+{node[noeud,label=330:$0$] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {11}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\tikzstyle{level 4}=[sibling distance=8mm, level distance=8mm]
+\node[noeud,label=330:$-1$] {7}
+child
+{node[noeud,label=330:$1$] {2}
+child
+{node[noeud,label=330:$0$] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$1$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{node[noeud,label=330:$0$] {6}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {11}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\tikzstyle{level 4}=[sibling distance=8mm, level distance=8mm]
+\node[noeud,label=330:$-1$] {7}
+child
+{node[noeud,label=330:$1$] {2}
+child
+{node[noeud,label=330:$0$] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {4}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {6}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+}
+child
+{node[noeud,label=330:$0$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {11}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\tikzstyle{level 4}=[sibling distance=8mm, level distance=8mm]
+\node[noeud,label=330:$0$] {7}
+child
+{node[noeud,label=330:$1$] {2}
+child
+{node[noeud,label=330:$0$] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {4}
+child
+{node[noeud,label=330:$0$] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$0$] {6}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+}
+child
+{node[noeud,label=330:$1$] {9}
+child
+{node[noeud,label=330:$0$] {8}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud,label=330:$-1$] {11}
+child
+{node[noeud,label=330:$0$] {10}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\end{document}

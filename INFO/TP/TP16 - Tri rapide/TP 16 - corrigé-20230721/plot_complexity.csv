@@ -1,0 +1,57 @@
+import csv
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+#nom_fichier_tri_insertion = "complexite_moyenne_tri_insertion.csv"
+path_quicksort = "complexity_analysis.csv"
+
+def read_csv_file(path):
+    with open(path, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        sizes = []
+        times = []
+        ncomp = []
+        for line in reader:
+            if (len(line)> 2):
+                n = int(line[0]);
+                sizes.append(n)
+                t = float(line[1])
+                times.append(t)
+                n = int(line[2])
+                ncomp.append(n)
+    return sizes, times, ncomp
+
+#tailles1, temps1 = lire_fichier(nom_fichier_tri_insertion)
+#plt.plot(tailles1, temps1, "r+", label="tri par insertion")
+
+sizes, times, ncomp = read_csv_file(path_quicksort)
+plt.plot(sizes, times, "g+", label="qsort")
+
+plt.xlabel("Taille du tableau à trier")
+plt.ylabel("Temps d'exécution moyen estimé (en secondes)")
+plt.title("Analyse expérimentale de la complexite")
+plt.show()
+
+
+
+sizes_nlogn = sizes*np.log2(sizes)
+plt.plot(sizes_nlogn, times, "r+")
+plt.xlabel("nlog(n)")
+plt.ylabel("Temps d'exécution moyen estimé (en secondes)")
+plt.title("Mise en évidence de la croissance quasi-lineaire pour qsort")
+plt.show()
+
+# Exercice 3
+alpha, beta, r_value, p_value, std_err = stats.linregress(sizes_nlogn, ncomp)
+
+print("Constante alpha: ", alpha)
+
+
+x = np.linspace(0, max(sizes_nlogn), 10)
+y = beta + alpha * x
+plt.plot(sizes_nlogn, ncomp, "r+")
+plt.plot(x, y, "k--")
+texte = "~" + str(alpha) + " Nlog2(N)"
+plt.figtext(0, 0, texte)
+plt.show()       

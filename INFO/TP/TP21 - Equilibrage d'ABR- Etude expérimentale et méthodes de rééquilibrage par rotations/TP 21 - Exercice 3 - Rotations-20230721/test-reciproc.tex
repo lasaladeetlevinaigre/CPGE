@@ -1,0 +1,103 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{tkz-tab}
+\begin{document}
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud] {4}
+child
+{node[noeud] {2}
+child
+{node[noeud] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+child
+{node[noeud] {5}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud] {2}
+child
+{node[noeud] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud] {4}
+child
+{node[noeud] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud] {5}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+;
+\end{tikzpicture}
+
+\begin{tikzpicture}[label distance =-1mm]
+\tikzstyle{noeud}=[circle, minimum size=5mm, inner sep=0pt, fill=red!25!white]
+\tikzstyle{level 1}=[sibling distance=40mm, level distance=8mm]
+\tikzstyle{level 2}=[sibling distance=24mm, level distance=8mm]
+\tikzstyle{level 3}=[sibling distance=14mm, level distance=8mm]
+\node[noeud] {4}
+child
+{node[noeud] {2}
+child
+{node[noeud] {1}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+child
+{node[noeud] {3}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+}
+child
+{node[noeud] {5}
+child
+{{edge from parent[draw=none]}}
+child
+{{edge from parent[draw=none]}}
+}
+;
+\end{tikzpicture}
+
+\end{document}
