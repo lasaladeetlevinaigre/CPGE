@@ -1,0 +1,24 @@
+(* Vous n'avez pas le droit de changer la valeur du prix des chambres et du petit-déjeuner: 
+   le petit déjeuner est à 5 euros et 50 centimes, 
+   la chambre haute saison à 80 euros,
+   la chambre en basse saison à 50 euros. 
+Vous pouvez par contre changer l'écriture de ces valeurs dans le code. 
+ 
+La syntaxe du code du code doit rester la même. Les modifications consistent en l'ajout ou effacement de quelques caractères pour chaque erreur.
+
+Regardez bien les erreurs affichées par l'interpréteur OCaml. Corrigez et testez après chaque nouvelle correction.
+*)
+
+let tarif_hotel n_nuits petit_dej Basse_saison =
+ 
+  let prix_chambre = if (Basse_saison = true) then 50 else 80 
+  if (petit_dej = true) then
+    let prix_petit_dej = 5.50 in
+    return float_of_int(n_nuits) * ( prix_chambre + prix_petit_dej);;
+  else
+    return float_of_int(n_nuit) * prix_chambre;;         
+;;
+
+printf.printf "La facture client TTC s'élève à: %d\n" tarif_hotel 5 true false;;
+
+    

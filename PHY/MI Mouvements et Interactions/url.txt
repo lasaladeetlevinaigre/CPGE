@@ -1,0 +1,10 @@
+http://subaru.univ-lemans.fr/AccesLibre/UM/Pedago/physique/02/meca/torsion.html
+https://phyanim.sciences.univ-nantes.fr/Meca/Cinematique/entrainement_rot_FJ.php
+https://phyanim.sciences.univ-nantes.fr/Meca/Cinematique/entrainement_trans_FJ.php
+http://subaru.univ-lemans.fr/AccesLibre/UM/Pedago/physique/02/divers/planete.html
+http://subaru.univ-lemans.fr/AccesLibre/UM/Pedago/physique/02/meca/forcecentrale.html
+https://phyanim.sciences.univ-nantes.fr/Meca/Planetes/Nature_FJ.php
+https://phyanim.sciences.univ-nantes.fr/Meca/R.F.D/chute1.php
+https://phyanim.sciences.univ-nantes.fr/Meca/Oscillateurs/pend_pesant1.php
+https://phyanim.sciences.univ-nantes.fr/Meca/Cinematique/coord_spheriques.php
+https://phyanim.sciences.univ-nantes.fr/Meca/Cinematique/coord_cylindriques.php

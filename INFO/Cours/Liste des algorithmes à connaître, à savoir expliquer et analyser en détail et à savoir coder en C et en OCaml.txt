@@ -1,0 +1,67 @@
+Arithmétique
+Algorithme d'Euclide (Séquence 2, DS3) (version itérative et récursive) + preuves + complexité. Théorème de Lamé (DS4)
+Algorithme d'Euclide étendu (DM) + preuves + complexité
+Algorithme du crible d’Ératosthène (DS2) + complexité
+Algorithme d'écriture d'un nombre en binaire  (version itérative et récursive)+ complexité
+
+Calcul algébrique
+Multiplication russe (version itérative et récursive) (Séquence 6) + preuves + complexité
+Exponentiation naïve (version itérative et récursive) (Séquence 7) + preuves + complexité
+Exponentiation rapide (dichotomique) (version itérative et récursive) (Séquence 7) + preuves + complexité
+
+Tris
+Tri à bulles  + preuves + complexité
+Tri par insertion (version itérative et récursive) + preuves + complexité
+Tri rapide: terminaison, correction, complexité (la pire, la mieux, en moyenne)
+
+Algorithmes de recherche
+Algorithme de recherche séquentielle d'une valeur dans un tableau  (version itérative et récursive) + preuves + complexité
+Algorithme de recherche dichotomique d'une valeur dans un tableau  (version itérative et récursive) + preuves + complexité
+Algorithme de recherche de la racine d'une fonction strictement monotone par dichotomie + preuves + complexité
+
+Algorithmique des textes
+Recherche naïve d'un motif dans un texte + complexité
+Algorithme de recherche de motif dans un texte de Boyer Moore
+Algorithme de recherche de motif dans un texte de Rabin Karp
+Algorithme de compression de Huffman, arbres préfixe
+
+Logique
+Représentation des formules logiques sous forme d'arbre, énumération des valuations, évaluation d'une formule logique sur une valuation, affichage de la table de vérité
+Mise sous forme CNF /DNF (à savoir faire à la main sur papier)
+Algorithme de Quine (backtracing) pour la résolution d'une instance du problème SAT. Sans et avec le renvoie d'une valuation modèle. Complexité
+
+Structures de données
+Listes: Implémentation sous forme de maillons chaînés + toutes les opérations d'accession et de transformation (insertion, suppression, concaténation) + complexités. Définition inductive
+Listes: Implémentation sous d'un grand tableau + toutes les opérations d'accession et de transformation + complexités 
+Tableaux redimensionnables: coût amorti sur des opérations d'ajout successives d'un élément à partir d'un tableau vide
+Piles: définition abstraites et implémentations: maillons, tableau, tableau redimensionnable
+Files: définition abstraite et implémentations: maillons, tableau circulaire (ring buffer), avec 2 piles immuables en OCaml
+Arbres: définition inductive. Calcul du nombre de noeuds, de la hauteur. Parcours préfixe, infixe, postfixe
+ABR: primitive d'insertion, de recherche, de suppression. Lien entre complexité temporelle des primitives et le caractère équilibré de l'arbre
+Tas: arbre binaire complet, stockage dans un tableau. Implémentation des primitives d'insertion, recherche, suppression (logarithmique car complet => equilibré). Tamisage.
+Files de priorité implémentées par des tas. Move-up et Move-down (tamisage)
+Arbres généraux enracinés: structure de données, parcours, calcul du nombre de noeuds, de la hauteur. Algorithme de conversion depuis et vers un arbre binaire (isomorphisme avec les arbres binaires n'ayant aps de sous arbre droit sous la racine)
+Tables de hachage: implémentation des primitives d'ajout, de recherche, de suppression d'un couple clé-valeur. Bonnes propriétés des fonctions de hachage
+Graphes: implémentations (matrice d'adjacence, listes ou dictionnaires d'adjacence + complexités des primitives+ avantages/inconvénients des différentes implémentations). Lien avec les arbres généraux.
+
+Algorithmique des arbres
+Algorithmique des ABR, implémentation de primitives d'insertion, recherche et suppression (plus subtil)
+Rotations et préservation de la propriété ABR
+Équilibrage d'arbres ABR: arbres rouge-noir, arbres AVL
+Algorithmique des tas (implémentation par tableau), implémentation de files de priorité, tamisage
+
+
+Algorithmique des graphes
+Parcours en profondeur (DFS) récursif et itératif (avec une pile). Complexité spatiale et temporelle. lien avec les parcours pré-fixe et post-fixe vus sur les arbres
+Calcul des composantes connexes d'un graphe non orienté.
+Calcul d'un tri topologique pour un graphe orienté acyclique. Lien avec l'ordonnancement de tâches
+Repérage et énumération de cycles.
+Parcours en largeur (BFS) récursif et itératif (avec une pile). Complexité spatiale et temporelle
+Plus court chemin: Dijkstra. Implémentation avec listes d'adjacence,  principe et déroulé de l'algorithme, analyse de complexité temporelle et spatiale selon choix d'implémentation graphe/file de priorité. Reconstruction des plus courts chemins avec le tableau des prédécesseurs.
+Plus court chemin: Floyd-Warshall. Implémentation avec matrice d'adjacence, principe et déroulé de l'algorithme, preuve de correction totale, analyse de complexité temporelle et spatiale selon choix d'implémentation graphe/file de priorité. Reconstruction des plus courts chemins avec le tableau des intermédiaires.
+Comparaison Dijkstra/Floyd-Warshall.
+
+Jeux
+Hanoï (version récursive) + complexité spatiale et temporelle
+Labyrinthe avec une pile (exo de colle dispo)
+Modélisation SAT d'un Sudoku
