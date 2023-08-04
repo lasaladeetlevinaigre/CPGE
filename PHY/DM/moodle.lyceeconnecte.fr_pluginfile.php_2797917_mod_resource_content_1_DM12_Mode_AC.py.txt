@@ -1,0 +1,79 @@
+"""Exécuter les cellules les unes après les autres après les avoir complétées
+en cliquant sur Run puis Execute Cell (ou CTRL + Entrée)
+Pour exécuter l'ensemble du fichier : CTRL + E
+"""
+# Mode AC de l'oscillosope
+
+## Cellule 1 :Importation des bibliothèques utiles
+import numpy as np                  # pour la manipulation des tableaux
+import matplotlib.pyplot as plt     # pour les représentations graphiques
+
+## Cellule 2: Données du problème physique
+fe = 'à compléter'               # fréquence du signal e (en Hz)
+E0 = 'à compléter'               # Valeur moyenne du signal e (en V)
+A = 'à compléter'                 # Amplitude du signal e (en V)
+
+## Cellule 3 : Synthèse spectrale du signal e
+N = 'à compléter'                # Nombre d'harmoniques non nuls impairs pris en compte
+
+def e(t):
+    """ Fonction qui évalue le signal e à l'instant t """
+    e = E0                      # prise en compte de la composante continue
+    for n in range(0, N+1):     # prise en compte des harmoniques impairs pour n compris entre 0 et N
+        Bn = 'à compléter'      # Amplitude de l'harmonique de rang impair 2n+1
+        en = 'à compléter'      # Expression de l'harmonique de rang impair 2n+1
+        e = e + en              # Expression de e par sommation des composantes
+    return e
+
+## Cellule 4: Représentation graphique du signal e
+"""
+t = np.linspace(tmin, tmax, N)
+Renvoie un tableau de N points régulièrement espacés entre tmin (inclus) et tmax (inclus)
+"""
+t = np.linspace('à compléter')            # Tableau des valeurs de t représentées
+
+plt.figure(figsize = (12,5))
+plt.plot('à compléter', label="Signal d'entrée e(t)") # Tracé du signal e(t) en trait bleu
+plt.xlim(0, 3/fe)
+plt.ylim(-2,2)
+plt.xlabel(r"$t$ (en s)")
+plt.ylabel(r"$e$ (en V)")
+plt.grid()
+plt.legend(loc = 'upper right')
+plt.show()
+
+## Cellule 5 :Définition du gain et du déphasage introduits par le filtre
+def G(f, fc):
+    """ Fonction qui renvoie le gain du filtre à la fréquence f (fc : fréquence de coupure du filtre) """
+    return 'à compléter'
+
+def phi(f, fc):
+    """ Fonction qui renvoie la phase du filtre à la fréquence f (fc : fréquence de coupure du filtre) """
+    return 'à compléter'
+
+## Cellule 6 : Synthèse spectrale du signal de sortie du filtre en réponse au signal e
+def s(t, fc):
+    """ Fonction qui évalue le signal s, à l'instant t, en sortie du filtre passe-haut
+    dont la fréquence de coupure est fc. """
+    s = 'à compléter'               # calcul de la composante continue de s(t)
+    for n in range(0, N+1):         # calcul des composantes spectrales suivantes
+        Bn =                        # amplitude de l'harmonique de rang 2n+1 pour e(t)
+        Sn = 'à compléter'          # amplitude de l'harmonique de rang 2n+1 pour s(t)
+        phin = 'à compléter'        # phase à l'origine de l'harmonique de rang 2n+1 pour s(t)
+        sn = 'à compléter'          # Expression de l'harmonique de rang impair 2n+1
+        s = 'à compléter'
+    return 'à compléter'
+
+## Cellule 7 : Représentation graphique du signal s
+fc ='à compléter'              # Fréquence de coupure du filtre
+
+plt.figure(figsize = (12,5))
+plt.plot('à compléter', label="Signal d'entrée e(t)") # Tracé du signal e(t) en trait bleu
+plt.plot('à compléter', label = "Signal de sortie s(t)") # Tracé du signal s(t) en pointillés (--) rouges
+plt.xlim(0, 3/fe)
+plt.ylim(-2,2)
+plt.xlabel(r"$t$ (en s)")
+plt.ylabel(r"$e$ (en V)")
+plt.grid()
+plt.legend(loc = 'lower right')
+plt.show()

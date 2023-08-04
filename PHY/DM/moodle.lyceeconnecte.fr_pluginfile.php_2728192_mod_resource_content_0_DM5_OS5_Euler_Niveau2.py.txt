@@ -1,0 +1,98 @@
+"""Exécuter les cellules les unes après les autres après les avoir complétées
+en cliquant sur Run puis Execute Cell (ou CTRL + Entrée)
+Pour exécuter l'ensemble du fichier : CTRL + E
+"""
+# Résolution d’une équation différentielle avec la méthode d’Euler explicite
+# Réponse indicielle du circuit RC
+
+## Cellule 1 : Importation des bibliothèques nécessaires
+
+import numpy as np                  # pour la manipulation des tableaux
+import matplotlib.pyplot as plt     # pour les représentations graphiques
+
+## Cellule 2 : Système physique étudié et valeurs numériques des paramètres physiques
+# Valeurs numériques de paramètres physiques : à compléter
+E =              # en V
+R =              # en Ohm
+C =              # en F
+tau =            # Expression littérale (en s)
+t0, tf =         # bornes de l'intervalle de résolution (en s)
+u0 =             # Condition initiale (en V)
+
+# Équation différentielle à résoudre
+def derivee_u(u, t):
+    """
+    Fonction explicitant du/dt en fonction de u et t .
+    """
+    return            # expression à compléter
+
+## Cellule 3 : Implémentation de la méthode d'Euler explicite
+def euler(F, y0, t0, tf, dt):
+    """
+    Résout le problème de Cauchy y'(t)=F(y(t),t) avec y(0)=y0 par la méthode
+    d'Euler explicite.
+    Arguments d'entrée :
+    - F : fonction donnant y' (fonction de 2 variables) ;
+    - y0 : condition initiale sur y (flottant) ;
+    - t0 et tf : bornes de l'intervalle de résolution (flottants) ;
+    - dt : pas de discrétisation utilisé pour la résolution (flottant).
+    Variables de sortie :
+    - t : vecteur contenant l'ensemble des instants tk (array numpy) ;
+    - y : vecteur contenant l'ensemble des valeurs approchées yk (array numpy).
+    """
+  # Création et initialisation des variables de sortie : à compléter
+    """
+    t = np.arange(tmin,tmax,dt)
+    Renvoie un tableau de points, espacés du pas dt, entre tmin (inclus) et tmax (exclus)
+    """
+    t =           # les valeurs sont comprises dans l'intervalle [t0,tf+dt[ avec un pas égal à dt
+    N =           # Taille du tableau t
+    y =           # initialisation du tableau y
+    y[0] =        # prise en compte de la CI : à compléter
+
+  # Boucle permettant le calcul des yk par récurrence : à compléter
+    for
+
+
+    return
+
+## Cellule 4 : Résolution numérique
+dt =                           # Expression du pas de résolution : à compléter
+t, u_Euler =                  # résolution par la méthode d'Euler
+
+## Cellule 5 : Résolution analytique
+def sol_exacte(t):
+    """
+    Expression analytique de la solution exacte.
+    """
+    return              # Expression à compléter
+"""
+t = np.linspace(tmin,tmax,N)
+Renvoie un tableau de N points régulièrement espacés entre tmin (inclus) et tmax (inclus)
+"""
+t_fixe =        # Variable temporelle contenant 100 valeurs dans [t0,tf] : à compléter
+u_exacte = sol_exacte(t_fixe)           # Calcul de la solution exacte
+
+## Cellule 6 : Représentation graphique
+plt.figure(figsize=(16,9))          # création d'une fenêtre graphique
+
+plt.plot(       , label = f"Solution exacte ")   # Graphe temporel de la solution exacte en trait rouge, le temps étant en ms : compléter la zone avant 'label'
+plt.plot(        , label = r"Solution numérique avec $\delta t = \dfrac{\tau}{10}$"+f" = {dt*1e3} ms") # Graphe temporel de la solution numérique en tirets bleus, le temps étant en ms : compléter la zone avant 'label'
+
+# Gestion de l'affichage
+plt.xlim(t0,tf*1e3), plt.xlabel('t (ms)')   # habillage de l'axe des abscisses
+plt.ylim(0,E+1.), plt.ylabel("u (V)")     # habillage de l'axe des ordonnées
+plt.legend(loc = 'lower right')     # affichage de la légende en bas à droite
+plt.grid()           # affichage de la grille
+plt.show()           # affichage de la figure
+
+## Cellule 7 : Représentation graphique pour plusieurs pas de résolution
+plt.figure(figsize=(16,9))          # création d'une nouvelle fenêtre graphique
+
+# Graphe temporel de la solution exacte en trait rouge, le temps étant en ms : à compléter
+
+# Boucle de résolutions numériques pour différents pas de résolution et tracé des solutions : à compléter
+
+# Gestion de l'affichage : à compléter
+
+

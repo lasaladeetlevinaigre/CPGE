@@ -1,0 +1,120 @@
+"""Exécuter les cellules les unes après les autres après les avoir complétées
+en cliquant sur Run puis Execute Cell (ou CTRL + Entrée)
+Pour exécuter l'ensemble du fichier : CTRL + E
+"""
+# Résolution d’une équation différentielle d'ordre 2
+# Étude d'un oscillateur linéaire amorti
+
+## Cellule 1 : Importation des bibliothèques utiles
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as sci    # Pour utiliser la fonction odeint
+from math import *
+
+## Cellule 2 :  Données du problème physique -> A COMPLETER
+
+# Constantes physiques
+ksi = 1                   # Coefficient d'amortissement
+M = 800.                    # Masse du canon (kg)
+m = 2.                      # Masse de l'obus (kg)
+k2 = 244.                   # Constante de raideur du ressort (N/m)
+v0 = 600.                   # Vitesse initiale de l'obus (m/s)
+omega = sqrt(k2 / M)        # Expression de la pulsation propre (en rad.s-1)
+T = 2*np.pi/omega           # Expression de la période propre (en s)
+
+# Paramètres de la résolution numérique
+t0, tf = 0, 5*T                 # bornes de l'intervalle de résolution
+n = 1000                         # nombre de points
+dt = (tf-t0) / (n-1)            # expression du pas temporel pour la résolution numérique
+
+# Conditions initiales
+x0 = 0                   # Abscisse initiale du canon (m)
+xprim0 = - m / M *v0     # Expression de la vitesse initiale du canon (m/s)
+y0 = np.array([x0, xprim0]) # Initialisation du vecteur y=[x,x']
+
+# Création de la variable temporelle
+"""
+numpy.linspace (tmin,tmax,N)
+Renvoie un tableau de N points régulièrement espacés
+entre tmin (inclus) et tmax (inclus)
+"""
+t = np.linspace(t0,tf,n)  # n points régulièrement espacés entre t0 (inclus) et tf (inclus)
+
+# Définition de la fonction dérivée de y(t)
+def derivee_y(y,t):
+    return np.array([y[1], -2*ksi*omega*y[1] - omega**2*y[0]]) # expression à compléter
+
+## Cellule 3 : Résolution avec odeint et représentation graphique -> A COMPLETER
+"""
+scipy.integrate.odeint (f,y0,t)
+
+Résout un système d'équations différentielles d'ordre 1
+Paramètres :
+    f : f(y,t) : fonction qui calcule la dérivée de y à l'instant t
+    y0 : tableau ou vecteur : condition initiale
+    t : tableau d'instants pour lesquels la résolution est réalisée
+Renvoie :
+    y : tableau ou vecteur avec les valeurs de y calculées pour chaque instant t
+    (les valeurs initiales sont sur la 1ère ligne)
+"""
+y = sci.odeint(derivee_y,y0,t)  # Vecteur y obtenu avec odeint : à compléter
+
+# Représentation graphique
+plt.subplot(2,1,1)  # Subdivision de la fenêtre graphique en 2 fenêtres, l'une au-dessus de l'autre et tracé sur la fenêtre du haut
+plt.plot(t,y[:,0],'r-',label='odeint')  # Graphe de l'abscisse x en fonction du temps en trait rouge : à compléter
+plt.xlabel(r"$t$ (en s)")           # Nom de l'axe des abscisses
+plt.ylabel("Position (m)")          # Nom de l'axe des ordonnées
+plt.legend(loc = 'upper right')   # Affichage de la légende en haut à droite
+plt.grid()  # Affichage de la grille
+plt.show()  # Affichage de la fenêtre
+
+plt.subplot(2,1,2) # Tracé sur la fenêtre du bas
+plt.plot(t,y[:,1],'r-',label='odeint') # Graphe de la vitesse xprim en fonction du temps en trait rouge : à compléter
+plt.xlabel(r"$t$ (en s)")               # Nom de l'axe des abscisses
+plt.ylabel("Vitesse (m/s)")             # Nom de l'axe des ordonnées
+plt.legend(loc = 'upper right')     # Affichage de la légende en haut à droite
+plt.grid()  # Affichage de la grille
+plt.show()  # Affichage de la fenêtre
+
+## Cellule 4 : Résolution avec Euler et représentation graphique -> A COMPLETER
+def euler(F, y0, t, dt, n):
+    """
+Paramètres :
+    F : fonction donnant y'
+    y0 : condition initiale sur y
+    t : tableaux des instants pour lesquels les calculs sont réalisés
+    dt : pas de discrétisation utilisé pour la résolution
+    n : nombre de points pour lesquels les calculs sont réalisés
+Renvoie :
+    y : vecteur contenant l'ensemble des valeurs approchées yk
+    """
+    y = np.zeros([n,2])            # initialisation du vecteur y : n lignes, 2 colonnes
+    y[0] = y0                      # prise en compte des conditions initiales
+
+    # Boucle permettant le calcul des yk par récurrence
+    for k in range(0,n-1):         # k prend les valeurs de 0 à n-2
+        y[k+1] = y[k] + F(y[k],t[k])*dt # relation de récurrence : à compléter
+    return y
+
+y_euler = euler(derivee_y, y0, t, dt, n) # Vecteur y_euler obtenu avec la méthode d'Euler : à compléter
+
+# Représentation graphique
+plt.subplot(2,1,1)
+plt.plot(t,y_euler[:,0],'b--',label='Euler') # Graphe de l'abscisse x en fonction du temps en tirets bleus
+plt.legend(loc = 'upper right')
+plt.subplot(2,1,2)
+plt.plot(t,y_euler[:,1],'b--',label='Euler') # Graphe de la vitesse xprim en fonction du temps en tirets bleus
+plt.legend(loc = 'upper right')
+
+## Cellule 5 : Calcul analytique et représentation graphique -> A COMPLETER
+wp = omega*sqrt(1-ksi**2) # Expression de la pseudo-pulsation (rad/s)
+x_calc = xprim0 / wp * np.sin(wp*t) * np.exp(-ksi*omega*t) # Expression analytique de l'abscisse
+xprim_calc = xprim0 *(np.cos(wp*t) - ksi*omega / wp * np.sin(wp*t)) * np.exp(-ksi*omega*t) # Expression analytique de la vitesse
+
+# Représentation graphique
+plt.subplot(2,1,1)
+plt.plot(t,x_calc,'k:',label='Calcul') # Graphe de l'abscisse x en fonction du temps en pointillés noirs : à compléter
+plt.legend(loc = 'upper right')
+plt.subplot(2,1,2)
+plt.plot(t,xprim_calc,'k:',label='Calcul') # Graphe de la vitesse xprim en fonction du temps en pointillés noirs : à compléter
+plt.legend(loc = 'upper right')

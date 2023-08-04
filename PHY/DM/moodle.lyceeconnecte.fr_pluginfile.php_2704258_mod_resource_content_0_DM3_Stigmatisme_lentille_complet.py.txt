@@ -1,0 +1,155 @@
+"""Exécuter les cellules les unes après les autres après les avoir complétées
+en cliquant sur Run puis Execute Cell (ou CTRL + Entrée)
+Pour exécuter l'ensemble du fichier : CTRL + E
+"""
+# STIGMATISME D'UNE LENTILLE DEMI-BOULE
+
+## Cellule 1 : Importation des bibliothèques 
+import numpy as np                  # pour la manipulation des tableaux
+import matplotlib.pyplot as plt     # pour les représentations graphiques
+
+## Cellule 2 : Définition des constantes du problème
+n = 1.5                             # indice optique du verre de la lentille : à compléter
+R = 5.0                             # rayon de la lentille (en cm) : à compléter
+
+## A - Définition des fonctions utiles
+
+## Cellule 3 : Fonctions "géométriques"
+
+def absI(yI):
+    """
+    Renvoie l'abscisse (en cm) du point d'incidence sur le dioptre de sortie de la 
+    lentille pour le rayon incident dont le paramètre d'impact est yI.
+    """
+    return np.sqrt(R**2-yI**2)
+
+def angleInc(yI):
+    """
+    Renvoie l'angle d'incidence (en rad), défini par rapport à la normale au dioptre de sortie de 
+    la lentille, du rayon incident dont le paramètre d'impact est yI.
+    """
+    return - np.arcsin(yI/R)
+
+yMax = R/n      # Valeur maximale de la largeur du faisceau incident, au-delà de laquelle
+                # il y a réflexion totale sur le dioptre de sortie de la lentille : à compléter
+           
+def angleRef(yI):
+    """
+    Renvoie l'angle de réfraction (en rad), défini par rapport à la normale au dioptre de sortie 
+    de la lentille, du rayon incident dont le paramètre d'impact est yI.
+    """
+    if abs(yI) > yMax:   
+        return None  # il y a réflexion totale
+    else:
+        return np.arcsin(n*np.sin(angleInc(yI)))
+
+def angleD(yI):
+    """
+    Renvoie l'angle de déviation (en rad) du rayon émergent associé au rayon incident de 
+    paramètre d'impact yI.
+    """
+    if abs(yI) > yMax:   
+        return None  # il y a réflexion totale
+    else:
+        return angleRef(yI)-angleInc(yI)
+
+
+## Cellule 4 : Fonction "graphique"
+        
+def dessinRayon(yI,x1,x2):
+    """
+    Cette fonction crée deux listes X et Y (abscisses et ordonnées) utiles pour représenter 
+    le trajet du rayon lumineux dont le paramètre d'impact est yI, entre les points d'abscisses 
+    x1 (supposée < 0) et x2 (supposée > R).
+    """
+    xI = absI(yI)                   # abscisse du point d'impact sur le dioptre de sortie
+    
+    # Dans tous les cas, le rayon va rectilignement du point (x1,yI) jusqu'au point (xI,yI)
+    X, Y = [x1, xI], [yI, yI]
+    
+    if abs(yI) > yMax:              # s'il y a réflexion totale, on ne représente pas le
+                                    # trajet ultérieur du rayon lumineux
+        return X, Y  
+    else:                           # sinon, on détermine complètement la position du point
+                                    # d'absisse x2
+        D = angleD(yI)                           
+        y2 = yI + np.tan(D)*(x2-xI)
+        X.append(x2), Y.append(y2)  # et on ajoute ses coordonnées aux listes X et Y  
+        return X,Y
+    
+
+## B - Tracé des rayons lumineux émergents
+
+## Cellule 5 : Le tracé en lui-même
+        
+plt.figure(figsize=(16,9))           # création d'une nouvelle fenêtre graphique
+# Representation de la lentille
+plt.plot([0,0], [-R,R], 'k-')       # dioptre d'entrée                                               
+yS = np.linspace(-R, R, 500)
+plt.plot(absI(yS), yS, 'k-')        # dioptre de sortie
+
+N = 10 # Nombre de rayons à tracer = 2*N+1
+
+# Représentation des rayons lumineux
+for yI in [k*R/N for k in range(-N,N+1)]:
+    X, Y = dessinRayon(yI,-R,4*R)
+    plt.plot(X, Y, 'b-')
+
+plt.xlabel('x (cm)')
+plt.ylabel('y (cm)')
+plt.axis('scaled')                  # pour avoir une représentation orthonormée
+plt.show()                          # affichage de la fenêtre
+
+
+## Cellule 6 : Distances de focalisation
+
+def distFocalisation(yI):
+    """
+    Détermine l'abscisse du point d'intersection entre le rayon émergent associé au paramètre
+    d'impact yI et l'axe optique.
+    """
+    # Gestion des cas particuliers
+    if abs(yI) > yMax:              # cas où il y a réfléxion totale
+        return None    
+    elif yI == 0:                   # cas du rayon confondu avec l'axe optique
+        yI = R/100                  # on prolonge la fonction par continuité en 0
+   
+    xI, D = absI(yI), angleD(yI)    #  calcul de xI et D grâce aux fonctions idoines
+    return  xI - yI / np.tan(D)     # Expression de xA' : à compléter
+    
+# Représentation graphique
+LyI = np.linspace(0, yMax, 100)
+LxAprim = np.array([distFocalisation(yI) for yI in LyI])
+
+plt.figure(figsize=(16,9))
+plt.plot(LyI, LxAprim, 'm-')
+plt.xlim(0,R)
+plt.xlabel(r"$y_I$ (cm)")
+plt.ylim(0,1.1*np.max(LxAprim))
+plt.ylabel(r"$x_{A'}$ (cm)")
+# Matérialisation de la zone de réflexion totale
+plt.fill_betweenx(y = [0,1.1*np.max(LxAprim)], x1 = yMax, x2 = R, color = 'r', alpha = .1)
+plt.grid()
+plt.show()
+
+## Cellule 7 : Tracé avec diaphragme : à compléter
+
+plt.figure(figsize=(16,9))           # création d'une nouvelle fenêtre graphique
+# Representation de la lentille
+plt.plot([0,0], [-R,R], 'k-')       # dioptre d'entrée                                               
+yS = np.linspace(-R, R, 500)
+plt.plot(absI(yS), yS, 'k-')        # dioptre de sortie
+
+#Largeur du diaphragme
+dmax = 1. # en cm
+N = 2 # Nombre de rayons à tracer = 2*N+1
+
+# Représentation des rayons lumineux
+for yI in [k*dmax/N for k in range(-N,N+1)]:
+    X, Y = dessinRayon(yI,-R,4*R)
+    plt.plot(X, Y, 'b-')
+
+plt.xlabel('x (cm)')
+plt.ylabel('y (cm)')
+plt.axis('scaled')                  # pour avoir une représentation orthonormée
+plt.show()                          # affichage de la fenêtre

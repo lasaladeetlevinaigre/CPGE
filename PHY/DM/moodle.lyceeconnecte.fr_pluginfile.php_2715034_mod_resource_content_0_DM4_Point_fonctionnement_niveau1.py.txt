@@ -1,0 +1,99 @@
+"""Exécuter les cellules les unes après les autres après les avoir complétées
+en cliquant sur Run puis Execute Cell (ou CTRL + Entrée)
+Pour exécuter l'ensemble du fichier : CTRL + E
+"""
+# Point de fonctionnement d'un circuit
+
+## Cellule 1 : Importation des bibliothèques
+from matplotlib import pyplot as plt
+import numpy as np           # pour la manipulation des tableaux (plus faciles à utiliser que des listes car on peut faire des opérations directement sur les tableaux!)
+from scipy import optimize   # contient des modules d'algèbre linéaire, d'optimisation... utilise les tableaux de numpy
+
+## Cellule 2 : Caractéristique du dipôle D
+"""
+x = np.array([1., 1.1, 1.2])
+L'objet x créé est un tableau à une dimension (nécessité d'importer le module numpy).
+Le tableau est défini ici à partir d'une liste de réels (les valeurs expérimentales mesurées en physique doivent toujours être déclarées en Python comme des réels!)
+
+"""
+UD =   # Tableau des valeurs de UD en V (à compléter)
+ID =1e-3*np.array([0.,0.,0.,0.,50.,100.,150.,200.,250.,300.]) # Tableau des valeurs de ID en A (en unités SI !!!)
+
+plt.figure(figsize=(16,9)) # Création de la seule et unique figure nécessaire
+plt.plot(ID*1e3,UD,'ro',label='Caractéristique du dipôle D') # Graphe des UD (en V) en fonction de ID (en mA : attention au changement d'unité!) : points expérimentaux représentés par des ronds rouges
+plt.xlabel("Courant I (mA)") # Nom de l'axe des abscisses
+plt.ylabel("Tension U (V)") # Nom de l'axe des ordonnées
+plt.legend(loc='best')  # Position de la légende : au meilleur endroit
+plt.grid()  # Affichage de la grille
+plt.show()  # Affichage de la figure
+
+## Cellule 3 : Modélisation de la caractéristique du dipôle
+#Découpage de la caractéristique en 2 morceaux
+#Morceau 1
+ID1 = ID[:4]  # Tableau contenant les 4 premières valeurs : ID = 0
+UD1 =  # Tableau contenant les 4 premières valeurs de UD correspondant à ID = 0 (à compléter)
+
+#Morceau 2
+ID2 = ID[4:]  # Tableau contenant les valeurs de ID sauf les 4 premières valeurs
+UD2 =   # Tableau contenant les valeurs de UD sauf les 4 premières valeurs (à compléter)
+
+#Linéarisation de la caractéristique : modèle de Thévenin équivalent pour le morceau 2
+"""
+p = np.polyfit(x, y, n)
+Modélise la courbe y = f(x) par un polynôme de degré n
+Arguments:
+    x : tableau des abscisses
+    y : tableau des ordonnées
+    n : degré du polynôme (pour n = 1 : régression linéaire)
+Renvoie:
+    p : tableau des coefficients du polynôme tel que :
+    p[0] : coefficient de degré n, p[1] : coefficient de degré n-1...
+    p[n] : coefficient de degré 0
+
+"""
+p =  # Modélisation de la courbe UD2 = f(ID2) : obtention des coefficients de la régression linéaire modélisant le morceau 2 (à compléter)
+ED =     # Fem du modèle de Thévenin équivalent (à compléter)
+RD =     # Résistance du modèle de Thévenin équivalent (à compléter)
+
+#Affichage des paramètres du modèle de Thévenin équivalent
+print('Caractéristique statique du dipôle : modèle de Thévenin du morceau 2')
+print(f'Fem : ED = {ED:.1f} V')
+print(f'Résistance : RD = {RD:.1f} Ohm')
+print('\n')
+
+# Tracé de la caractéristique linéarisée du dipôle
+UD2_mod = ED + RD * ID2  # Modèle de Thévenin du morceau 2 : équation de la régression linéaire
+UD_mod = np.append(UD1,UD2_mod) # Concaténation de toutes les valeurs du modèle de UD
+plt.plot(        ) #Tracé de la caractéristique linéarisée par morceaux, en tirets (--) rouges (à compléter)
+plt.legend(loc='best')
+plt.show()
+
+## Cellule 4 : Caractéristique de la pile
+E =   # Valeur de la fem de la pile (en V) (à compléter)
+R =   # Valeur de la résistance interne de la pile (en Ohm) (à compléter)
+Upile =   # Equation de la caractéristique de la pile (à compléter)
+
+plt.plot(          ) #Tracé de la caractéristique de la pile en trait bleu (à compléter)
+plt.show()
+
+## Cellule 5 : Point d'intersection des caractéristiques = point de fonctionnement
+def PDF(I):  # Fonction Point De Fonctionnement (PDF)
+    """
+    Renvoie la différence entre la tension aux bornes du dipôle D, obtenue par modélisation, et la tension aux bornes de la pile, pour toute valeur de I
+    """
+    UD2_mod = ED + RD * I
+    Upile = E - R * I
+    return UD2_mod-Upile
+
+I0 = 100.e-3  # Valeur du courant (en A) permettant d'initier la recherche de zéro effectuée par la fonction fsolve
+IP = float(optimize.fsolve(PDF,I0)) # Recherche de la valeur IP du courant qui annule la fonction PDF ( PDF(IP) = 0 ); la recherche est initiée à partir de la valeur I0 définie précédemment
+
+#Affichage des coordonnées du point de fonctionnement
+print('Coordonnées du point de fonctionnement')
+print(f'Intensité dans le dipôle : IP = {IP*1e3:.1f} mA')
+print(f'Tension aux bornes du dipôle : UP = {E - R * IP:.1f} V')
+
+plt.plot(IP*1e3,E - R * IP,'kD',label='Point de fonctionnement') # Représentation du point de fonctionnement P par un diamant (D) noir (k)
+plt.legend(loc='best')
+plt.show()
+
