@@ -158,8 +158,8 @@ def image2Tab(path):
 
 wframe = 1280
 hframe = 720
-wblock = 16
-hblock = 9*2
+wblock = 16*4
+hblock = 9*8
 
 #nombre_blocks = 1600
 nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -210,29 +210,6 @@ def calculateBlockAverageColor(b, img):
     return [med[0]/size, med[1]/size, med[2]/size]
 
 
-def calculateBlockDifference3(b1, img1, b2, img2):
-
-    x0, y0 = block2coordTopLeftCorner(b1)
-    tab1 = np.zeros((hblock, wblock, 3), dtype=np.uint8)
-    for i in range(wblock):
-        for j in range(hblock):
-            tab1[j, i] = img1[j+y0, i+x0]
-
-
-    x1, y1 = block2coordTopLeftCorner(b2)
-    tab2 = np.zeros((hblock, wblock, 3), dtype=np.uint8)
-    for i in range(wblock):
-        for j in range(hblock):
-            tab2[j, i] = img2[j+y1, i+x1]
-
-    if tab1.shape != tab2.shape:
-        raise ValueError("Les dimensions des blocs ne correspondent pas.")
-    
-    diff = np.square(tab1.astype(int) - tab2.astype(int))
-    MSD = np.mean(diff)
-    
-    return MSD
-
 
 def calculateBlockDifference(b1, img1, b2, img2):
     x_ref1, y_ref1 = block2coordTopLeftCorner(b1)
@@ -257,6 +234,10 @@ def calculateBlockDifference(b1, img1, b2, img2):
     diff = np.array([diff[0]/size, diff[1]/size, diff[2]/size])
     a, b, c = np.sqrt(diff)
     return a+b+c
+
+
+
+
 
 
 def blockPlusRessemblant(b1, img1, img2, exclus):
@@ -322,7 +303,7 @@ def buildMotionVector(img1, img2):
 
         vecteurs[k] = [dx, dy]
 
-        #print(f"{k} --> {conjugue} //// {x_a, y_a} --> {x_a + dx, y_a + dy}")
+        print(f"{k} --> {conjugue} //// {x_a, y_a} --> {x_a + dx, y_a + dy}")
 
     return vecteurs
 
@@ -357,14 +338,17 @@ def buildIntermediateFrame(vectors, img_ref, nb_frame):
 def testbuildMotionVector(img1, img2):
 
     vecteurs = buildMotionVector(img1, img2)
-    print(vecteurs)
+
+    displayVectorMap(vecteurs, img1)
 
     displayImageWithBlock(img1)
     #displayImageWithBlock(img2)
 
     #displayVectorMap(vecteurs, img1)
 
-    buildIntermediateFrame(vecteurs, img1, 50)
+    #buildIntermediateFrame(vecteurs, img1, 30)
+
+    #images2Video('circle')
 
 
 
@@ -410,6 +394,8 @@ def displayVectorMap(vecteurs, img):
         [0, 0, 128]     # Bleu marine
     ]
 
+    colors = [0, 0, 0]
+
     
     for k in range(nombre_blocks):
         x0, y0 = block2coordTopLeftCorner(k)
@@ -439,7 +425,7 @@ def displayVectorMap(vecteurs, img):
 
         arrow_end = (int(x0+vecteurs[k][0]) + wblock // 2, int(y0+vecteurs[k][1]) + hblock // 2)
 
-        cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=2, tipLength=1)
+        cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=2, tipLength=0.08)
 
 
 
@@ -552,12 +538,52 @@ def images2Video(folder_path):
 
 
 
+
+def est_aubord(k):
+    """
+    a = (k-nombre_blocks_x < 0) # cote nord
+    b = (k%nombre_blocks_x == 0) #cote est
+    c = (k%nombre_blocks_x == nombre_blocks_x-1) # cote ouest
+    d = (k+nombre_blocks_x >= nombre_blocks) # cote sud
+    """
+    return (k-nombre_blocks_x < 0) or (k%nombre_blocks_x == 0) or (k%nombre_blocks_x == nombre_blocks_x-1) or (k+nombre_blocks_x >= nombre_blocks)
+
+
+def testClosestNeigh(b):
+
+    directions = [[True, 0, 1], [True, 1, 1], [True, 1, 0], [True, 1, -1], [True, 0, -1], [True, -1, -1], [True, -1, 0], [True, -1, 1]]
+
+        
+    depth = 0
+    while depth < nombre_blocks:
+        depth += 1
+
+        for direction in directions:
+            if direction[0]:
+                pass
+
+            k = b + depth * direction[1] + depth * direction[2]*nombre_blocks_x
+
+            print(k)
+
+            if est_aubord(k):
+                direction[0] = False
+
+
+
+
+
+
+
 if __name__ == "__main__":
     # main()
     img1 = image2Tab("circle1.png")
     #print(img1)
-    img2 = image2Tab("circle2.png")
+    img2 = image2Tab("circle3.png")
 
 
     #testbuildMotionVector(img1, img2)
-    images2Video('circle')
+
+    testClosestNeigh(5)
+
+    #images2Video('circle')
