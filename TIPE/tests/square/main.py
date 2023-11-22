@@ -549,7 +549,7 @@ def est_aubord(k):
     return (k-nombre_blocks_x < 0) or (k%nombre_blocks_x == 0) or (k%nombre_blocks_x == nombre_blocks_x-1) or (k+nombre_blocks_x >= nombre_blocks)
 
 
-def testClosestNeigh(b):
+def closestNeighs(b):
 
     directions = [[True, 0, 1], [True, 1, 1], [True, 1, 0], [True, 1, -1], [True, 0, -1], [True, -1, -1], [True, -1, 0], [True, -1, 1]]
 
@@ -584,6 +584,6 @@ if __name__ == "__main__":
 
     #testbuildMotionVector(img1, img2)
 
-    testClosestNeigh(5)
+    closestNeighs(5)
 
     #images2Video('circle')
