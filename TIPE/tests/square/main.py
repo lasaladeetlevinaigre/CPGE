@@ -158,8 +158,8 @@ def image2Tab(path):
 
 wframe = 1280
 hframe = 720
-wblock = 16*4
-hblock = 9*8
+wblock = 16*2
+hblock = 9*4
 
 #nombre_blocks = 1600
 nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -168,6 +168,8 @@ nombre_blocks_y = int((hframe/hblock))
 
 print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
 
+
+block_search_radius = 3
 
 
 
@@ -238,28 +240,55 @@ def calculateBlockDifference(b1, img1, b2, img2):
 
 
 
+diffs = []
+
+def show_diffs(diffs):
+    occurrences = {}
+    
+    for element in diffs:
+        if element in occurrences:
+            occurrences[element] += 1
+        else:
+            occurrences[element] = 1
+    
+    elements = list(occurrences.keys())
+    ol = list(occurrences.values())
+    
+    plt.figure(figsize=(8, 6))
+    plt.bar(elements, ol, color='skyblue')
+    plt.show()
+
+    
+def closestNeighs(b1):
+    i, j = b1//nombre_blocks_x, b1%nombre_blocks_x
+    neigh = []
+
+    for a in range(-block_search_radius, block_search_radius+1):
+        for b in range(-block_search_radius, block_search_radius+1):
+
+            k = (i+a)*nombre_blocks_x + j+b
+
+            if( k >= 0 and k < nombre_blocks ) :
+                print(j+b)
+                neigh.append(k)
+            
+    return neigh
 
 
 def blockPlusRessemblant(b1, img1, img2, exclus):
     min_diff = math.inf
     b2 = -1
-    for k in range(nombre_blocks):
+    for k in closestNeighs(b1):
         if not exclus[k]:
-            #print(calculateBlockAverageColor(k, img1), f" -- {k}")
             diff = calculateBlockDifference(b1, img1, k, img2)
-            if diff < min_diff:
-                min_diff = diff
-                b2 = k
+            diffs.append(diff)
+            if diff < 80:
+                if b2 == -1:
+                    b2 = k
+                if diff < min_diff:
+                    min_diff = diff
+                    b2 = k
     return b2
-
-def blockPlusRessemblantDeterminist(b1, img1, img2, exclus):
-    if b1 == 20:
-        return 21
-    elif b1 == 21:
-        return 20
-    else:
-        return b1
-
 
 
 def testcalculateBlockDifference(img1, img2):
@@ -286,14 +315,15 @@ def testcalculateBlockDifference(img1, img2):
 
 
 
-
 def buildMotionVector(img1, img2):
     vecteurs = np.zeros((nombre_blocks, 2), dtype=np.float32)
     exclus = np.zeros(nombre_blocks, dtype=np.uint8)
+    conjugues = np.zeros(nombre_blocks)
 
     for k in range(nombre_blocks):
         conjugue = blockPlusRessemblant(k, img1, img2, exclus)
         exclus[conjugue] = 1
+        conjugues[k] = conjugue
 
         x_a, y_a = block2coordTopLeftCorner(k)
         x_b, y_b = block2coordTopLeftCorner(conjugue)
@@ -303,9 +333,9 @@ def buildMotionVector(img1, img2):
 
         vecteurs[k] = [dx, dy]
 
-        print(f"{k} --> {conjugue} //// {x_a, y_a} --> {x_a + dx, y_a + dy}")
+        #print(f"{k} --> {conjugue} //// {x_a, y_a} --> {x_a + dx, y_a + dy}")
 
-    return vecteurs
+    return vecteurs, conjugues
 
 
 def buildIntermediateFrame(vectors, img_ref, nb_frame):
@@ -328,41 +358,41 @@ def buildIntermediateFrame(vectors, img_ref, nb_frame):
 
 
         #displayImageWithBlock(frame)
-        writeImage(frame, f"circle/f{t}")
+        writeImage(frame, f"circle2/f{t}")
         pass
 
     return
 
-
-
 def testbuildMotionVector(img1, img2):
 
-    vecteurs = buildMotionVector(img1, img2)
+    #vecteurs, conjugues = buildMotionVector(img1, img2)
 
-    displayVectorMap(vecteurs, img1)
+    for k in range(nombre_blocks):
+        pass
+        #print(f"{k} --> {conjugues[k]}")
 
-    displayImageWithBlock(img1)
+
+    print(closestNeighs(400))
+
+    displayImageWithNeighs(img1, closestNeighs(400))
+
+
+    #displayImageWithBlock(img1)
+    #displayVectorMap(vecteurs, conjugues, img2)
+
     #displayImageWithBlock(img2)
 
     #displayVectorMap(vecteurs, img1)
 
     #buildIntermediateFrame(vecteurs, img1, 30)
 
-    #images2Video('circle')
+    #images2Video('circle2')
 
 
 
 
 
-
-
-
-
-
-
-
-
-def displayVectorMap(vecteurs, img):
+def displayVectorMap(vecteurs, conjugues, img):
     temp = deepcopy(img)
     clr_contour = [255, 0, 0]
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -408,10 +438,7 @@ def displayVectorMap(vecteurs, img):
 
 
         if nombre_blocks < 2000:
-            avg = calculateBlockAverageColor(k, img)
-            if(avg[0] != 255 and avg[1] != 255):
-                #print(f"block {k}: clr moyenne : {avg}")
-                pass
+
             # Ajouter le numéro du bloc à côté du rectangle
             text = str(k)
             text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
@@ -422,10 +449,12 @@ def displayVectorMap(vecteurs, img):
 
         # Coordonnées de départ pour la flèche (au centre du rectangle)
         arrow_start = (x0 + wblock // 2, y0 + hblock // 2)
+        if conjugues[k] == -1:
+            arrow_end = (x0 + wblock // 2, y0 + hblock // 2)
+        else:
+            arrow_end = (int(x0+vecteurs[k][0]) + wblock // 2, int(y0+vecteurs[k][1]) + hblock // 2)
 
-        arrow_end = (int(x0+vecteurs[k][0]) + wblock // 2, int(y0+vecteurs[k][1]) + hblock // 2)
-
-        cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=2, tipLength=0.08)
+        cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=1, tipLength=0.04)
 
 
 
@@ -459,6 +488,46 @@ def displayBlock(b, img):
 
 def displayImage(img):
     cv2.imshow("image", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+
+
+def displayImageWithNeighs(img, neighs):
+    temp = deepcopy(img)
+    clr_contour = [255, 0, 0]
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.3
+    font_thickness = 1
+    font_color = [0, 0, 0]
+    
+    for k in range(nombre_blocks):
+        x0, y0 = block2coordTopLeftCorner(k)
+        
+        for i in range(wblock):
+            temp[y0, i + x0] = clr_contour
+        for i in range(hblock):
+            temp[y0 + i, x0] = clr_contour
+
+
+
+        if nombre_blocks < 2000:
+            # Ajouter le numéro du bloc à côté du rectangle
+            text = str(k)
+
+            text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
+
+            text_x = x0 + 5  # Décaler le texte vers la droite du bloc
+            text_y = y0 + 10
+
+            if k in neighs:
+                cv2.putText(temp, text, (text_x, text_y), font, font_scale, [0, 0, 255], font_thickness)
+            else:
+                cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
+
+
+    cv2.imshow("image", temp)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -539,42 +608,6 @@ def images2Video(folder_path):
 
 
 
-def est_aubord(k):
-    """
-    a = (k-nombre_blocks_x < 0) # cote nord
-    b = (k%nombre_blocks_x == 0) #cote est
-    c = (k%nombre_blocks_x == nombre_blocks_x-1) # cote ouest
-    d = (k+nombre_blocks_x >= nombre_blocks) # cote sud
-    """
-    return (k-nombre_blocks_x < 0) or (k%nombre_blocks_x == 0) or (k%nombre_blocks_x == nombre_blocks_x-1) or (k+nombre_blocks_x >= nombre_blocks)
-
-
-def closestNeighs(b):
-
-    directions = [[True, 0, 1], [True, 1, 1], [True, 1, 0], [True, 1, -1], [True, 0, -1], [True, -1, -1], [True, -1, 0], [True, -1, 1]]
-
-        
-    depth = 0
-    while depth < nombre_blocks:
-        depth += 1
-
-        for direction in directions:
-            if direction[0]:
-                pass
-
-            k = b + depth * direction[1] + depth * direction[2]*nombre_blocks_x
-
-            print(k)
-
-            if est_aubord(k):
-                direction[0] = False
-
-
-
-
-
-
-
 if __name__ == "__main__":
     # main()
     img1 = image2Tab("circle1.png")
@@ -582,8 +615,12 @@ if __name__ == "__main__":
     img2 = image2Tab("circle3.png")
 
 
-    #testbuildMotionVector(img1, img2)
+    testbuildMotionVector(img1, img2)
 
-    closestNeighs(5)
+    #show_diffs(diffs)
+
+    #displayImageWithBlock(img1)
 
     #images2Video('circle')
+
+    
