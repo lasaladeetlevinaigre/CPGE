@@ -1,0 +1,4 @@
+Déplacement de blocs:
+Pas linéaire en fonction du temps (convexité) mais de bloc en bloc (que chaqeu bloc au corus du deplacement soit toujours aligné avec la grille generale)
+
+===> A partir des conjugues calculer le déplacement non plus de chaque pixel du bloc k mais du block global sur la grille de la frame construite

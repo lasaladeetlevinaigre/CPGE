@@ -66,7 +66,7 @@ def writeImage(tab, name):
         for y in range(height-1):
             image[y, x] = tab[y, x]
     cv2.imwrite(f'{name}.png', image)
-    print(f"{name} générée")
+    print(f"{name} générée (writeImage 100%)")
 
 
 
@@ -79,7 +79,7 @@ def writeImage2(tab, name):
         for y in range(height-1):
             image[y, x] = tab[2*y, 2*x]
     cv2.imwrite(f'{name}.png', image)
-    print(f"{name} générée")
+    print(f"{name} générée (writeImage2 50%)")
 
 
 
@@ -156,22 +156,6 @@ def image2Tab(path):
 #####################################################
 
 
-wframe = 1280
-hframe = 720
-wblock = 16*2
-hblock = 9*4
-
-#nombre_blocks = 1600
-nombre_blocks = int((wframe/wblock) * (hframe/hblock))
-nombre_blocks_x = int((wframe/wblock))
-nombre_blocks_y = int((hframe/hblock))
-
-print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
-
-
-block_search_radius = 3
-
-
 
 
 
@@ -233,9 +217,9 @@ def calculateBlockDifference(b1, img1, b2, img2):
             #print(diff)
 
     size = wblock*hblock
-    diff = np.array([diff[0]/size, diff[1]/size, diff[2]/size])
-    a, b, c = np.sqrt(diff)
-    return a+b+c
+    diff = diff[0]/size + diff[1]/size + diff[2]/size
+    #a, b, c = np.sqrt(diff)
+    return diff
 
 
 
@@ -268,8 +252,9 @@ def closestNeighs(b1):
 
             k = (i+a)*nombre_blocks_x + j+b
 
-            if( k >= 0 and k < nombre_blocks ) :
-                print(j+b)
+            x, y = k//nombre_blocks_x, k%nombre_blocks_x
+
+            if( k >= 0 and k < nombre_blocks and y >= j-block_search_radius and y <= j+block_search_radius) :
                 neigh.append(k)
             
     return neigh
@@ -282,7 +267,7 @@ def blockPlusRessemblant(b1, img1, img2, exclus):
         if not exclus[k]:
             diff = calculateBlockDifference(b1, img1, k, img2)
             diffs.append(diff)
-            if diff < 80:
+            if diff < 1000:
                 if b2 == -1:
                     b2 = k
                 if diff < min_diff:
@@ -338,7 +323,9 @@ def buildMotionVector(img1, img2):
     return vecteurs, conjugues
 
 
-def buildIntermediateFrame(vectors, img_ref, nb_frame):
+def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     for t in range(nb_frame):
         frame = np.zeros((hframe, wframe, 3), dtype=np.uint8)
@@ -350,43 +337,40 @@ def buildIntermediateFrame(vectors, img_ref, nb_frame):
                     x = i+x0
                     y = j+y0
 
-                    x_prim = x + int(vectors[k][0] * ( (t+1)/(nb_frame+1) ) )
-                    y_prim = y + int(vectors[k][1] * ( (t+1)/(nb_frame+1) ) )
 
-                    frame[y_prim, x_prim] = img1[y, x]
+                    if False: #conjugues[k] == -1:
+                        frame[x, y] = img1[y, x] # le bloc n'a pas d'image, on prend par transparence, le bloc originel
+                    else:
+                        x_prim = x + int(vectors[k][0] * ( t/nb_frame ) )
+                        y_prim = y + int(vectors[k][1] * ( t/nb_frame ) )
+
+                        frame[y_prim, x_prim] = img1[y, x]
             #print(f"frame{t}-block{k}genere")
 
 
-        #displayImageWithBlock(frame)
-        writeImage(frame, f"circle2/f{t}")
+        displayImageWithBlock(frame)
+        #writeImage(frame, f"{path}/f{t}")
         pass
 
     return
 
 def testbuildMotionVector(img1, img2):
 
-    #vecteurs, conjugues = buildMotionVector(img1, img2)
+    vecteurs, conjugues = buildMotionVector(img1, img2)
 
     for k in range(nombre_blocks):
         pass
-        #print(f"{k} --> {conjugues[k]}")
+        print(f"{k} --> {conjugues[k]}")
 
 
-    print(closestNeighs(400))
-
-    displayImageWithNeighs(img1, closestNeighs(400))
-
-
-    #displayImageWithBlock(img1)
-    #displayVectorMap(vecteurs, conjugues, img2)
-
+    displayVectorMap(vecteurs, conjugues, img1)
+    displayVectorMap(vecteurs, conjugues, img2)
+    
     #displayImageWithBlock(img2)
 
-    #displayVectorMap(vecteurs, img1)
+    buildIntermediateFrame(vecteurs, conjugues, img1, "circle3", 10)
 
-    #buildIntermediateFrame(vecteurs, img1, 30)
-
-    #images2Video('circle2')
+    #images2Video('circle3')
 
 
 
@@ -448,11 +432,11 @@ def displayVectorMap(vecteurs, conjugues, img):
 
 
         # Coordonnées de départ pour la flèche (au centre du rectangle)
-        arrow_start = (x0 + wblock // 2, y0 + hblock // 2)
-        if conjugues[k] == -1:
-            arrow_end = (x0 + wblock // 2, y0 + hblock // 2)
+        arrow_start = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+        if conjugues[k] == -1 or conjugues[k] == k:
+            arrow_end = (x0 + wblock // 2, y0 + 6 + hblock // 2)
         else:
-            arrow_end = (int(x0+vecteurs[k][0]) + wblock // 2, int(y0+vecteurs[k][1]) + hblock // 2)
+            arrow_end = (int(x0+vecteurs[k][0]) + wblock // 2, int(y0+vecteurs[k][1]) - 6 + hblock // 2)
 
         cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=1, tipLength=0.04)
 
@@ -609,6 +593,25 @@ def images2Video(folder_path):
 
 
 if __name__ == "__main__":
+
+
+    wframe = 1280
+    hframe = 720
+    wblock = 8*8
+    hblock = 9*4
+
+    #nombre_blocks = 1600
+    nombre_blocks = int((wframe/wblock) * (hframe/hblock))
+    nombre_blocks_x = int((wframe/wblock))
+    nombre_blocks_y = int((hframe/hblock))
+
+    print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
+
+
+    block_search_radius = 3
+
+
+
     # main()
     img1 = image2Tab("circle1.png")
     #print(img1)
@@ -617,7 +620,7 @@ if __name__ == "__main__":
 
     testbuildMotionVector(img1, img2)
 
-    #show_diffs(diffs)
+    show_diffs(diffs)
 
     #displayImageWithBlock(img1)
 
