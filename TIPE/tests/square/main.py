@@ -299,6 +299,9 @@ def testcalculateBlockDifference(img1, img2):
 
 
 
+
+
+
 def buildMotionVector(img1, img2):
     vecteurs = np.zeros((nombre_blocks, 2), dtype=np.float32)
     exclus = np.zeros(nombre_blocks, dtype=np.uint8)
@@ -322,6 +325,10 @@ def buildMotionVector(img1, img2):
         #print(f"{k} --> {conjugue} //// {x_a, y_a} --> {x_a + dx, y_a + dy}")
 
     return vecteurs, conjugues
+
+
+
+
 
 
 def buildIntermediateFrame2(vectors, conjugues, img_ref, path, nb_frame):
@@ -354,6 +361,10 @@ def buildIntermediateFrame2(vectors, conjugues, img_ref, path, nb_frame):
         pass
 
     return
+
+
+
+
 
 def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
     if not os.path.exists(path):
@@ -404,6 +415,8 @@ def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
         pass
 
     return
+
+
 
 
 
