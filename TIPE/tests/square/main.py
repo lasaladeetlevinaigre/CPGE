@@ -201,14 +201,13 @@ def calculateBlockDifference(b1, img1, b2, img2):
     x_ref1, y_ref1 = block2coordTopLeftCorner(b1)
     x_ref2, y_ref2 = block2coordTopLeftCorner(b2)
     diff = [0, 0, 0]
-    pas = 4
-    for i in range(wblock//pas):
-        for j in range(hblock//pas):
-            x1 = i*pas+x_ref1
-            y1 = j*pas+y_ref1
+    for i in range(wblock//pas_difference):
+        for j in range(hblock//pas_difference):
+            x1 = i*pas_difference+x_ref1
+            y1 = j*pas_difference+y_ref1
 
-            x2 = i*pas+x_ref2
-            y2 = j*pas+y_ref2
+            x2 = i*pas_difference+x_ref2
+            y2 = j*pas_difference+y_ref2
 
             diff[0] += pow( ( int(img1[y1, x1][0]) - int(img2[y2, x2][0]) ), 2)
             diff[1] += pow( ( int(img1[y1, x1][1]) - int(img2[y2, x2][1]) ), 2)
@@ -306,6 +305,8 @@ def buildMotionVector(img1, img2):
     conjugues = np.zeros(nombre_blocks)
 
     for k in range(nombre_blocks):
+        if k%100 == 0:
+            print("vecteurs de ", k)
         conjugue = blockPlusRessemblant(k, img1, img2, exclus)
         exclus[conjugue] = 1
         conjugues[k] = conjugue
@@ -323,7 +324,7 @@ def buildMotionVector(img1, img2):
     return vecteurs, conjugues
 
 
-def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
+def buildIntermediateFrame2(vectors, conjugues, img_ref, path, nb_frame):
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -354,6 +355,71 @@ def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
 
     return
 
+def buildIntermediateFrame(vectors, conjugues, img_ref, path, nb_frame):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    for t in range(nb_frame+1):
+        if (t != 0):
+            previous_frame = deepcopy(frame)
+        else:
+            previous_frame = img_ref
+
+        frame = np.zeros((hframe, wframe, 3), dtype=np.uint8)
+
+        for k in range(nombre_blocks):
+            j, i = k//nombre_blocks_x, k%nombre_blocks_x
+
+            x0, y0 = block2coordTopLeftCorner(k)
+
+            if conjugues[k] != -1:
+                #print("k", k, "i", i, "j", j)
+
+                j_prim, i_prim = conjugues[k]//nombre_blocks_x, conjugues[k]%nombre_blocks_x
+                dx, dy = i_prim-i, j_prim-j
+
+
+                block_a_remplir = (i + round(dx * t/nb_frame)) + (j + round(dy * t/nb_frame)) * nombre_blocks_x
+                #print(k,"conjugeu à ", conjugues[k], f"mvnt (dx{dx},dy{dy}) donc on rempli ", block_a_remplir)
+                #print("t", t)
+
+
+                x1, y1 = block2coordTopLeftCorner(block_a_remplir)
+
+                for i in range(wblock):
+                    for j in range(hblock):
+                        frame[y1 + j, x1 + i] = img_ref[y0 + j, x0 + i]
+
+
+            else:
+                #print(k,"conjugeu à -1")
+                for i in range(wblock):
+                    for j in range(hblock):
+                        frame[y0 + j, x0 + i] = previous_frame[y0 + j, x0 + i] # le bloc n'a pas d'image, on prend par transparence, le bloc originel
+                        #frame[y0 + j, x0 + i] = [255, 255, 255]
+
+
+        #displayImageWithBlock(frame)
+        writeImage(frame, f"{path}/f{t}")
+        pass
+
+    return
+
+
+
+def afficher_doublons(tableau):
+    elements_vus = set()
+    doublons = set()
+
+    for element in tableau:
+        if element in elements_vus and element != -1:
+            doublons.add(element)
+        else:
+            elements_vus.add(element)
+
+    return list(doublons)
+
+
 def testbuildMotionVector(img1, img2):
 
     vecteurs, conjugues = buildMotionVector(img1, img2)
@@ -363,14 +429,18 @@ def testbuildMotionVector(img1, img2):
         print(f"{k} --> {conjugues[k]}")
 
 
-    displayVectorMap(vecteurs, conjugues, img1)
-    displayVectorMap(vecteurs, conjugues, img2)
+    #displayVectorMap(vecteurs, conjugues, img1)
+    #displayVectorMap(vecteurs, conjugues, img2)
     
     #displayImageWithBlock(img2)
 
-    buildIntermediateFrame(vecteurs, conjugues, img1, "circle3", 10)
 
-    #images2Video('circle3')
+
+    print(afficher_doublons(conjugues))
+
+    buildIntermediateFrame(vecteurs, conjugues, img1, "out/circle1", 60)
+
+    images2Video('out/circle1')
 
 
 
@@ -522,7 +592,7 @@ def displayImageWithBlock(img):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 0.3
     font_thickness = 1
-    font_color = [0, 0, 0]
+    font_color = [0, 255, 0]
     
     for k in range(nombre_blocks):
         x0, y0 = block2coordTopLeftCorner(k)
@@ -578,7 +648,7 @@ def images2Video(folder_path):
     height, width, _ = first_image.shape
 
     # Création de l'objet VideoWriter
-    output_video = cv2.VideoWriter('circle.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 8, (width, height))
+    output_video = cv2.VideoWriter(f"{folder_path}.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 8, (width, height))
 
     # Ajout des images à la vidéo
     for image_path in image_files:
@@ -597,8 +667,8 @@ if __name__ == "__main__":
 
     wframe = 1280
     hframe = 720
-    wblock = 8*8
-    hblock = 9*4
+    wblock = 8
+    hblock = 9
 
     #nombre_blocks = 1600
     nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -609,6 +679,11 @@ if __name__ == "__main__":
 
 
     block_search_radius = 3
+    block_search_radius = round(wframe*0.15)//wblock
+    print(f"block_search_radius {block_search_radius}")
+
+
+    pas_difference = 4
 
 
 
@@ -620,7 +695,9 @@ if __name__ == "__main__":
 
     testbuildMotionVector(img1, img2)
 
-    show_diffs(diffs)
+    #images2Video('circle3')
+
+    #show_diffs(diffs)
 
     #displayImageWithBlock(img1)
 
