@@ -179,7 +179,7 @@ def displayImageWithBlock(img, highlight=[]):
             # text_y = y0 + 20
             text_x = x0 + 10
             text_y = y0 + 5
-            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center', fontweight='bold')
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center')
             # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
     plt.show()
@@ -230,13 +230,18 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
             temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    
+
     ax.imshow(temp)
 
     for k in range(nombre_blocks):
+
+        if blockAverageColor(k, img2) == [255, 255, 255]:
+            continue
+
         x0, y0 = block2coordTopLeftCorner(k)
         # Coordonnées de départ pour la flèche (au centre du rectangle)
         start = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+
         if vectors[k] == -1 or vectors[k] == k:
             end = (x0 + wblock // 2, y0 + 6 + hblock // 2)
         else:
@@ -245,7 +250,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
             dx, dy = x2-x1, y2-y1
 
             end = (int(x0+dx) + wblock // 2, int(y0+dy) - 6 + hblock // 2)
-        arrow_props = dict(facecolor='red', edgecolor='red', arrowstyle='->', shrinkA=0, lw=1)
+        arrow_props = dict(facecolor='black', edgecolor='black', arrowstyle='->', shrinkA=0, lw=1)
         ax.annotate('', xy=start, xytext=end, arrowprops=arrow_props)
 
 
@@ -257,7 +262,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
             # text_y = y0 + 20
             text_x = x0 + 10
             text_y = y0 + 5
-            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center', fontweight='bold')
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center')
             # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
 
@@ -777,7 +782,7 @@ def buildIntermediateFrame(vectors, img_ref, path, nb_frame, display=False):
 
 
 def isBlockOutside(k):
-    return (k < 0) or (k > nombre_blocks)
+    return (k < 0) or (k >= nombre_blocks)
 
 # Two Dimensional Logarithmic Search
 def TDL(img1, img2, bref):
@@ -794,10 +799,10 @@ def TDL(img1, img2, bref):
             centre+p:                 float("+inf"),
         }
 
-        if (centre + p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x):
+        if (centre + p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x) or (isBlockOutside(centre + p*nombre_blocks_x)):
             del points[centre + p*nombre_blocks_x]
 
-        if (centre - p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x):
+        if (centre - p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x) or (isBlockOutside(centre - p*nombre_blocks_x)):
             del points[centre - p*nombre_blocks_x]
 
         if isBlockOutside(centre-p):
@@ -833,8 +838,8 @@ def TDL(img1, img2, bref):
     # step 3
     # on cherche parmi les neuf blocs autour du centre
 
-    smallest = float("+inf")
-    smallest_pt = None
+    smallest = SAD(bref, img1, centre, img2)
+    smallest_pt = centre
 
     for k in [centre-nombre_blocks_y-1, centre-nombre_blocks_y, centre-nombre_blocks_y+1, centre-1, centre, centre+1, centre+nombre_blocks_y-1, centre-nombre_blocks_y, centre+nombre_blocks_y+1 ]:
         if not isBlockOutside(k):
@@ -917,7 +922,7 @@ if __name__ == "__main__":
     print("")
 
 
-    displayBlockNumbers = False
+    displayBlockNumbers = True
 
     name_test = "rond"
 
@@ -926,15 +931,14 @@ if __name__ == "__main__":
     img2 = readImg("tests/frame4.png")
     # displayImageWithBlock(img1, [206, 211])
 
-    displayImageWithBlock(img1, [374, 379])
+    # displayImageWithBlock(img1, [374, 379])
 
-    print(TDL(img1, img2, 208))
+    # print(TDL(img1, img2, 138))
 
-    # vecteurs = buildMotionVector(img1, img2)
-    # displayVectorMap(vecteurs, img2)
+    vecteurs = buildMotionVector(img1, img2)
+    displayVectorMap(vecteurs, img2)
 
-
-    # ecrire_csv("tests/vectors.csv", np.array(vecteurs))
+    # ecrire_csv("tests/vectorsTDL.csv", np.array(vecteurs))
 
 
     # for k in range(nombre_blocks):
