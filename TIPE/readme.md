@@ -1,6 +1,15 @@
 
 TIPE
 
+
+
+The use of the knowledge of the displacement of an object in successive frames is called Motion Compensation.
+
+
+
+
+
+
 https://www.maketecheasier.com/how-video-compression-works/
 
 
