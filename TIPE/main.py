@@ -786,7 +786,7 @@ def isBlockOutside(k):
 
 # Two Dimensional Logarithmic Search
 def TDL(img1, img2, bref):
-    p = 9
+    p = block_search_radius
     centre = bref
 
     while p > 1:
