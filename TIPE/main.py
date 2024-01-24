@@ -132,7 +132,7 @@ def displayImageWithNeighs(img, b):
 
 
 
-def displayImageWithBlock(img, saving=False, output_file="output.png"):
+def displayImageWithBlock(img, highlight=[]):
     clr_contour = [255, 0, 0]
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
@@ -143,27 +143,46 @@ def displayImageWithBlock(img, saving=False, output_file="output.png"):
 
     for k in range(nombre_blocks):
         x0, y0 = block2coordTopLeftCorner(k)
+
+        if k in highlight:
+            clr_contour[0] = 0
+            for i in range(wblock):
+                temp[y0, i + x0] = clr_contour
+                temp[y0+1, i + x0] = clr_contour
+                temp[y0+hblock-2, i + x0] = clr_contour
+                temp[y0+hblock-1, i + x0] = clr_contour
+
+            for i in range(hblock):
+                temp[y0 + i, x0] = clr_contour
+                temp[y0 + i, x0+1] = clr_contour
+                temp[y0 + i, x0+wblock-2] = clr_contour
+                temp[y0 + i, x0+wblock-1] = clr_contour
+
+        else:
+            clr_contour[0] = 255
+            for i in range(wblock):
+                temp[y0, i + x0] = clr_contour
+            for i in range(hblock):
+                temp[y0 + i, x0] = clr_contour
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.imshow(temp)
+
+    for k in range(nombre_blocks):
+        x0, y0 = block2coordTopLeftCorner(k)
         
-        for i in range(wblock):
-            temp[y0, i + x0] = clr_contour
-        for i in range(hblock):
-            temp[y0 + i, x0] = clr_contour
-
-
-        if displayBlockNumbers:
-            # Ajouter le num du bloc à côté du rectangle
+        if  displayBlockNumbers:
+            # Numero du bloc
             text = str(k)
             text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
-            text_x = x0 + 2
-            text_y = y0 + 10
-            cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
+            # text_x = x0 + 5 
+            # text_y = y0 + 20
+            text_x = x0 + 10
+            text_y = y0 + 5
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center', fontweight='bold')
+            # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
-    plt.imshow(temp)
     plt.show()
-
-
-    if saving:
-        cv2.imwrite(output_file, temp)
 
 
 
@@ -175,6 +194,8 @@ def displayTabPixels(tableau):
                 ligne_str += f'{couleur:3d}.'.rjust(3)  # alignement à droite avec une largeur de 5 char par composante
             ligne_str += ''
         print(ligne_str)
+
+
 
 
 def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
@@ -208,6 +229,24 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
         for i in range(hblock):
             temp[y0 + i, x0] = clr_contour
 
+    fig, ax = plt.subplots(figsize=(8, 6))
+    
+    ax.imshow(temp)
+
+    for k in range(nombre_blocks):
+        x0, y0 = block2coordTopLeftCorner(k)
+        # Coordonnées de départ pour la flèche (au centre du rectangle)
+        start = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+        if vectors[k] == -1 or vectors[k] == k:
+            end = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+        else:
+            x1, y1 = block2coordTopLeftCorner(k)
+            x2, y2 = block2coordTopLeftCorner(vectors[k])
+            dx, dy = x2-x1, y2-y1
+
+            end = (int(x0+dx) + wblock // 2, int(y0+dy) - 6 + hblock // 2)
+        arrow_props = dict(facecolor='red', edgecolor='red', arrowstyle='->', shrinkA=0, lw=1)
+        ax.annotate('', xy=start, xytext=end, arrowprops=arrow_props)
 
 
         if  displayBlockNumbers:
@@ -216,34 +255,16 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
             text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
             # text_x = x0 + 5 
             # text_y = y0 + 20
-            text_x = x0 + 2
+            text_x = x0 + 10
             text_y = y0 + 5
-            cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center', fontweight='bold')
+            # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
 
-        # Coordonnées de départ pour la flèche (au centre du rectangle)
-        arrow_start = (x0 + wblock // 2, y0 + 6 + hblock // 2)
 
-        if vectors[k] == -1 or vectors[k] == k:
-            arrow_end = (x0 + wblock // 2, y0 + 6 + hblock // 2)
-
-        else:
-            x1, y1 = block2coordTopLeftCorner(k)
-            x2, y2 = block2coordTopLeftCorner(vectors[k])
-            dx, dy = x2-x1, y2-y1
-
-            arrow_end = (int(x0+dx) + wblock // 2, int(y0+dy) - 6 + hblock // 2)
-
-        cv2.arrowedLine(temp, arrow_start, arrow_end, colors[k % len(colors)], thickness=1, tipLength=0.1)
-
-
-    plt.imshow(temp)
     plt.show()
 
-    if saving:
-        cv2.imwrite(output_file, temp)
-
-
+    return
 
 
 
@@ -570,6 +591,33 @@ def calculateBlockDifferenceSquare(b1, img1, b2, img2):
 
 
 
+def SAD(b1, img1, b2, img2):
+    x_ref1, y_ref1 = block2coordTopLeftCorner(b1)
+    x_ref2, y_ref2 = block2coordTopLeftCorner(b2)
+
+    diff = [0, 0, 0]
+    size = wblock*hblock
+
+    for i in range(wblock//pas_calcul_difference):
+        for j in range(hblock//pas_calcul_difference):
+
+            x1 = i*pas_calcul_difference+x_ref1
+            y1 = j*pas_calcul_difference+y_ref1
+
+            x2 = i*pas_calcul_difference+x_ref2
+            y2 = j*pas_calcul_difference+y_ref2
+
+            diff[0] += abs( int(img1[y1, x1][0]) - int(img2[y2, x2][0]) )
+            diff[1] += abs( int(img1[y1, x1][1]) - int(img2[y2, x2][1]) )
+            diff[2] += abs( int(img1[y1, x1][2]) - int(img2[y2, x2][2]) )
+
+            # print(diff)
+
+    diff = diff[0] + diff[1] + diff[2]
+
+    return diff
+
+
 
 
 
@@ -596,7 +644,7 @@ def blockPlusRessemblant2(b1, img1, img2, exclus):
 
     for k in getNeighs(b1):
         if exclus[k] == 0:
-            diff = calculateBlockDifference(b1, img1, k, img2)
+            diff = SAD(b1, img1, k, img2)
             if diff < min_diff:
                 min_diff = diff
                 b2 = k
@@ -612,7 +660,7 @@ def blockPlusRessemblant3(b1, img1, img2, exclus = None):
         if exclus[k] == 0:
 
 
-            diff = calculateBlockDifference(b1, img1, k, img2)
+            diff = SAD(b1, img1, k, img2)
 
             if diff < diff_minimale:
                 if b2 == -1:
@@ -626,7 +674,7 @@ def blockPlusRessemblant4(b1, img1, img2, exclus):
 
     for k in getNeighs(b1):
         if exclus[k] == 0:
-            diff = calculateBlockDifference(b1, img1, k, img2)
+            diff = SAD(b1, img1, k, img2)
             if diff < diff_minimale:
                 return k
 
@@ -649,7 +697,8 @@ def buildMotionVector(img1, img2):
         if k%100 == 0:
             print(f"vecteurs bloc {k} calculés")
 
-        conjugue = blockPlusRessemblant(k, img1_avg, img2_avg, exclus)
+        #conjugue = blockPlusRessemblant(k, img1_avg, img2_avg, exclus)
+        conjugue = TDL(img1, img2, k)
 
         exclus[conjugue] = 1
 
@@ -727,16 +776,76 @@ def buildIntermediateFrame(vectors, img_ref, path, nb_frame, display=False):
 
 
 
+def isBlockOutside(k):
+    return (k < 0) or (k > nombre_blocks)
+
+# Two Dimensional Logarithmic Search
+def TDL(img1, img2, bref):
+    p = 9
+    centre = bref
+
+    while p > 1:
+        # Nord - Sud - CENTRE - Ouest - Est
+        points = {
+            centre+p*nombre_blocks_x: float("+inf"),
+            centre-p*nombre_blocks_x: float("+inf"),
+            centre:                   float("+inf"),
+            centre-p:                 float("+inf"),
+            centre+p:                 float("+inf"),
+        }
+
+        if (centre + p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x):
+            del points[centre + p*nombre_blocks_x]
+
+        if (centre - p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x):
+            del points[centre - p*nombre_blocks_x]
+
+        if isBlockOutside(centre-p):
+            del points[centre-p]
+        if isBlockOutside(centre+p):
+            del points[centre+p]
 
 
+        for pt, val in points.items():
+            points[pt] = SAD(bref, img1, pt, img2)
+
+        # step 1
+        smallest = points[centre]
+        smallest_pt = centre
+
+        for pt, val in points.items():
+            if points[pt] < smallest: # ineg stricte pour garder le centre en smallest si il y a egalite de minimum
+                smallest = val
+                smallest_pt = pt
+
+        # print(points)
+        # print("centre", smallest_pt)
+        # displayImageWithBlock(img2, list(points.keys()))
+        # displayImageWithBlock(img2, [smallest_pt])
+
+        # step 2
+        if smallest_pt == centre:
+            p = p//2
+        else:
+            centre = smallest_pt
 
 
+    # step 3
+    # on cherche parmi les neuf blocs autour du centre
+
+    smallest = float("+inf")
+    smallest_pt = None
+
+    for k in [centre-nombre_blocks_y-1, centre-nombre_blocks_y, centre-nombre_blocks_y+1, centre-1, centre, centre+1, centre+nombre_blocks_y-1, centre-nombre_blocks_y, centre+nombre_blocks_y+1 ]:
+        if not isBlockOutside(k):
+            diff = SAD(bref, img1, k, img2)
+
+            if(diff < smallest):
+                smallest = diff
+                smallest_pt = k
 
 
-
-
-
-
+    return smallest_pt
 
 
 
@@ -774,29 +883,23 @@ if __name__ == "__main__":
     print("******"*10)
     print("")
 
-
-
-
     wframe = 512
     hframe = 256
-    wblock = 4*1
-    hblock = 4*1
+    wblock = 4*2
+    hblock = 4*2
 
     #nombre_blocks = 1600
     nombre_blocks = int((wframe/wblock) * (hframe/hblock))
     nombre_blocks_x = int((wframe/wblock))
     nombre_blocks_y = int((hframe/hblock))
 
-
     print(f"Taille image : {wframe}x{hframe}px")
     print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
     print(f"Taille block : {wblock}x{hblock}px")
 
-
     block_search_radius = round(wframe*0.15)//wblock
     #block_search_radius = 4
     print(f"block_search_radius={block_search_radius}")
-
 
     font_thickness = 1
     font_scale = 0.2
@@ -805,60 +908,33 @@ if __name__ == "__main__":
         displayBlockNumbers = True
 
 
-
-
     pas_calcul_difference = 1
     diff_minimale = 10000
 
-
-    # print(f"{nombre_blocks * (nombre_blocks / block_search_radius) * (1 / pas_calcul_difference) * wblock * hblock:.0f} calculs")
-
-
-
     print("")
     print("******"*10)
     print("******"*10)
     print("")
 
 
-
-    # for _ in range(10):
-    #     x = int(np.random.rand() * (wframe))
-    #     y = int(np.random.rand() * (hframe))
-    #     k = coord2Block(x, y)
-    #     print(k, x, y)
-    #     print(block2coordTopLeftCorner(k))
-
-
-
-
-
+    displayBlockNumbers = False
 
     name_test = "rond"
 
     #img1, img2 = extractFramesOfVideo("sea_shore.mp4", 10)
-    img1 = readImg("tests/frame1.png")
-    img2 = readImg("tests/frame2.png")
-    # displayImageWithBlock(img1)
-    # displayImageWithBlock(img2)
+    img1 = readImg("tests/frame3.png")
+    img2 = readImg("tests/frame4.png")
+    # displayImageWithBlock(img1, [206, 211])
+
+    displayImageWithBlock(img1, [374, 379])
+
+    print(TDL(img1, img2, 208))
+
+    # vecteurs = buildMotionVector(img1, img2)
+    # displayVectorMap(vecteurs, img2)
 
 
-
-    # for k in range(nombre_blocks):
-    #     x, y = block2coordTopLeftCorner(k)
-    #     m = blockAverageColor(k, img1)
-    #     if m != [255, 255, 255]:
-    #         print(x, y, k, m)
-    #         displayBlock(k, img1)
-
-
-    # displayBlock(799, img1)
-    # k = blockPlusRessemblant(799, img1, img2)
-    # displayBlock(k, img2)
-    # print(k)
-
-    vecteurs = buildMotionVector(img1, img2)
-    ecrire_csv("tests/vectors.csv", np.array(vecteurs))
+    # ecrire_csv("tests/vectors.csv", np.array(vecteurs))
 
 
     # for k in range(nombre_blocks):
@@ -868,7 +944,6 @@ if __name__ == "__main__":
     # displayVectorMap(vecteurs, img1, True, "vectors.png")
 
 
-    displayVectorMap(vecteurs, img2)
 
     # show_diffs_calulees(diffs_calulees)
 

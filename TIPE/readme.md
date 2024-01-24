@@ -50,3 +50,23 @@ https://books.google.fr/books?id=7XuU8T3ooOAC&pg=PA1&redir_esc=y#v=onepage&q&f=f
 
 [LIBRAIRIES C]
 ffmpeg - libavcodec
+
+
+
+
+
+
+
+
+
+
+
+
+The  main  disadvantage  of  block  motion  compensation  is  that  it  introduces discontinuities at the block borders (blocking artifacts). These artifacts appear in the form of sharp horizontal and vertical edges which are easily spotted by the human eye and produce ringing effects (large coefficients in high frequency sub-bands) in the Fourier-related transform used for transform coding of the residual frames.
+https://www.researchgate.net/publication/301230297_A_Hardware_implementation_of_true-motion_estimation_with_3-D_recursive_search_block_matching_algorithm
+
+
+Different algo de blockmatching
+	- 3 Step search
+	- 2D Logarithmic
+https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm
