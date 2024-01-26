@@ -175,11 +175,10 @@ def displayImageWithBlock(img, highlight=[]):
             # Numero du bloc
             text = str(k)
             text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
-            # text_x = x0 + 5 
-            # text_y = y0 + 20
-            text_x = x0 + 10
-            text_y = y0 + 5
-            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center')
+
+            text_x = x0 
+            text_y = y0 + 2
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='left', va='center')
             # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
     plt.show()
@@ -221,13 +220,13 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
     colors = [ [0, 0, 0] ]
 
     
-    for k in range(nombre_blocks):
-        x0, y0 = block2coordTopLeftCorner(k)
+    # for k in range(nombre_blocks):
+    #     x0, y0 = block2coordTopLeftCorner(k)
         
-        for i in range(wblock):
-            temp[y0, i + x0] = clr_contour
-        for i in range(hblock):
-            temp[y0 + i, x0] = clr_contour
+    #     for i in range(wblock):
+    #         temp[y0, i + x0] = clr_contour
+    #     for i in range(hblock):
+    #         temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
 
@@ -235,34 +234,34 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 
     for k in range(nombre_blocks):
 
-        if blockAverageColor(k, img2) == [255, 255, 255]:
+        if blockAverageColor(k, img1) == [255, 255, 255] and blockAverageColor(k, img2) == [255,255,255]:
             continue
 
         x0, y0 = block2coordTopLeftCorner(k)
         # Coordonnées de départ pour la flèche (au centre du rectangle)
-        start = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+        start = (x0 + wblock // 2, y0 + 5 + hblock // 2)
 
         if vectors[k] == -1 or vectors[k] == k:
-            end = (x0 + wblock // 2, y0 + 6 + hblock // 2)
+            end = start
         else:
-            x1, y1 = block2coordTopLeftCorner(k)
-            x2, y2 = block2coordTopLeftCorner(vectors[k])
-            dx, dy = x2-x1, y2-y1
+            x1, y1 = block2coordTopLeftCorner(vectors[k])
+            dx, dy = x1-x0, y1-y0
 
-            end = (int(x0+dx) + wblock // 2, int(y0+dy) - 6 + hblock // 2)
-        arrow_props = dict(facecolor='black', edgecolor='black', arrowstyle='->', shrinkA=0, lw=1)
-        ax.annotate('', xy=start, xytext=end, arrowprops=arrow_props)
+            end = (int(x0+dx) + wblock // 2, int(y0+dy) - 5 + hblock // 2)
+
+
+        arrow_props = dict(facecolor='black', edgecolor='black', arrowstyle='->', shrinkA=0, lw=0.2)
+        ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
 
 
         if  displayBlockNumbers:
             # Numero du bloc
             text = str(k)
             text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
-            # text_x = x0 + 5 
-            # text_y = y0 + 20
-            text_x = x0 + 10
-            text_y = y0 + 5
-            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='center', va='center')
+
+            text_x = x0 + 2
+            text_y = y0 + 4
+            ax.text(text_x, text_y, text, color='black', fontsize=6, ha='left', va='center')
             # cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
 
@@ -785,7 +784,7 @@ def isBlockOutside(k):
     return (k < 0) or (k >= nombre_blocks)
 
 # Two Dimensional Logarithmic Search
-def TDL(img1, img2, bref):
+def TDL(img1, img2, bref, display=False):
     p = block_search_radius
     centre = bref
 
@@ -805,9 +804,9 @@ def TDL(img1, img2, bref):
         if (centre - p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x) or (isBlockOutside(centre - p*nombre_blocks_x)):
             del points[centre - p*nombre_blocks_x]
 
-        if isBlockOutside(centre-p):
+        if ((centre-p)//nombre_blocks_x != centre//nombre_blocks_x) or isBlockOutside(centre-p):
             del points[centre-p]
-        if isBlockOutside(centre+p):
+        if ((centre+p)//nombre_blocks_x != centre//nombre_blocks_x) or isBlockOutside(centre+p):
             del points[centre+p]
 
 
@@ -823,10 +822,11 @@ def TDL(img1, img2, bref):
                 smallest = val
                 smallest_pt = pt
 
-        # print(points)
-        # print("centre", smallest_pt)
-        # displayImageWithBlock(img2, list(points.keys()))
-        # displayImageWithBlock(img2, [smallest_pt])
+        if display:
+            print(points)
+            print("centre", smallest_pt)
+            displayImageWithBlock(img2, list(points.keys()))
+            # displayImageWithBlock(img2, [smallest_pt])
 
         # step 2
         if smallest_pt == centre:
@@ -841,7 +841,7 @@ def TDL(img1, img2, bref):
     smallest = SAD(bref, img1, centre, img2)
     smallest_pt = centre
 
-    for k in [centre-nombre_blocks_y-1, centre-nombre_blocks_y, centre-nombre_blocks_y+1, centre-1, centre, centre+1, centre+nombre_blocks_y-1, centre-nombre_blocks_y, centre+nombre_blocks_y+1 ]:
+    for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
         if not isBlockOutside(k):
             diff = SAD(bref, img1, k, img2)
 
@@ -849,9 +849,25 @@ def TDL(img1, img2, bref):
                 smallest = diff
                 smallest_pt = k
 
+    if display:
+        print(f"choisi: {smallest_pt}")
+        displayImageWithBlock(img2, [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ])
 
     return smallest_pt
 
+
+
+def testTDL(img1, img2):
+    vecteurs = -np.ones(nombre_blocks)
+    for k in range(nombre_blocks):
+        if blockAverageColor(k, img1) != [255,255,255]:
+            vecteurs[k] = TDL(img1, img2, k)
+            if k%1000 == 1:
+                print(k)
+            # print(f"{k} --> {vecteurs[k]}")
+
+    displayVectorMap(vecteurs, img2)
+    return
 
 
 
@@ -883,15 +899,24 @@ def TDL(img1, img2, bref):
 
 if __name__ == "__main__":
 
+    # img1, img2 = extractFramesOfVideo("sea_shore.mp4", 10)
+    img1 = readImg("tests/gradient31.png")
+    img2 = readImg("tests/gradient32.png")
+
+
+
+
     print("")
     print("******"*10)
     print("******"*10)
     print("")
 
-    wframe = 512
-    hframe = 256
-    wblock = 4*2
-    hblock = 4*2
+    hframe, wframe, channels = img1.shape
+
+    # wframe = 256
+    # hframe = 512
+    wblock = 4*4
+    hblock = 4*4
 
     #nombre_blocks = 1600
     nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -902,8 +927,8 @@ if __name__ == "__main__":
     print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
     print(f"Taille block : {wblock}x{hblock}px")
 
-    block_search_radius = round(wframe*0.15)//wblock
-    #block_search_radius = 4
+    block_search_radius = round(wframe*0.30)//wblock
+    # block_search_radius = 10
     print(f"block_search_radius={block_search_radius}")
 
     font_thickness = 1
@@ -922,21 +947,31 @@ if __name__ == "__main__":
     print("")
 
 
-    displayBlockNumbers = True
 
-    name_test = "rond"
 
-    #img1, img2 = extractFramesOfVideo("sea_shore.mp4", 10)
-    img1 = readImg("tests/frame3.png")
-    img2 = readImg("tests/frame4.png")
-    # displayImageWithBlock(img1, [206, 211])
 
-    # displayImageWithBlock(img1, [374, 379])
 
-    # print(TDL(img1, img2, 138))
 
-    vecteurs = buildMotionVector(img1, img2)
-    displayVectorMap(vecteurs, img2)
+    displayBlockNumbers = False
+
+    name_test = "gradient"
+
+
+
+
+    displayImageWithBlock(img1, [])
+    # displayImageWithBlock(img2, [71, 138])
+
+    # print(TDL(img1, img2, 34, display=True))
+    testTDL(img1, img2)
+
+
+
+
+
+
+    # vecteurs = buildMotionVector(img1, img2)
+    # displayVectorMap(vecteurs, img2)
 
     # ecrire_csv("tests/vectorsTDL.csv", np.array(vecteurs))
 
