@@ -3,7 +3,7 @@
 ### Ancrage au thème
 
 ### Motivation du choix
-
+Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. Pour cela, la compression vidéo
 
 Positionnements thématiques
 -
