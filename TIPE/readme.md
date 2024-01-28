@@ -1,5 +1,24 @@
-TIPE - La compression vidéo en temps réel
-==
+# TIPE - Principe de la compression vidéo
+
+### Ancrage au thème
+
+### Motivation du choix
+
+
+Positionnements thématiques
+-
+- Informatique (Informatique pratique)
+
+Mots-clés
+-
+| Français                    | Anglais                  |
+|-----------------------------|--------------------------|
+| Compression vidéo           | Video compression        |
+| Vecteurs de déplacement     | Motion vector            |
+| Estimation de mouvement      | Motion estimation        |
+| Correspondance des blocs     | Block-matching           |
+
+
 
 Introduction
 -
@@ -28,32 +47,16 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 <br>
 
 
-Positionnements thématiques
--
-- Informatique (Informatique pratique)
-
-Mots-clés
--
-| Français                    | Anglais                  |
-|-----------------------------|--------------------------|
-| Compression vidéo           | Video compression        |
-| Vecteurs de déplacement     | Motion vector            |
-| Estimation de mouvement      | Motion estimation        |
-| Correspondance des blocs     | Block-matching           |
 
 
 Problématique retenue
 -
+Comment compresser une diffusion sportive ?
+
 
 Objectifs du TIPE du candidat
 -
-- Comprendre le fonctionement d'un codec de compression vidéo
-- Mettre en oeuvre un algorithme de recherche des blocs dans une image
-- Mettre en oeuvre un algorithme d'interpolation d'image
-
-Présentation
--
-Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. Pour cela, la compression vidéo 
+- Comprendre le fonctionement d'un codec
 
 
 
