@@ -34,9 +34,21 @@ Positionnements thématiques
 
 Mots-clés
 -
-compression vidéo - video compression
-vecteurs de déplacement - motion vector
-- block-matching
+| Français                    | Anglais                  |
+|-----------------------------|--------------------------|
+| Compression vidéo           | Video compression        |
+| Vecteurs de déplacement     | Motion vector            |
+| Estimation de mouvement      | Motion estimation        |
+| Correspondance des blocs     | Block-matching           |
+
+
+Problématique retenue
+-
+
+Objectifs du TIPE du candidat
+-
+- Comprendre le fonctionement 
+
 
 
 
