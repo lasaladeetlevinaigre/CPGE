@@ -1,7 +1,7 @@
 # TIPE - Principe de la compression vidéo
 
 ### Ancrage au thème
-Dans la rediffusion sportive, la compression vidéo minimise la taille des fichiers pour une transmission rapide. En utilisant des méthodes de compression, elle optimise la qualité d'image tout en préservant la fluidité des mouvements, améliorant l'expérience en streaming.
+Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. La compression vidéo minimise la taille des fichiers pour une transmission rapide. En utilisant des méthodes de compression, elle optimise la qualité d'image tout en préservant la fluidité des mouvements, améliorant l'expérience en streaming.
 
 ### Motivation du choix
 
@@ -15,8 +15,8 @@ Positionnements thématiques
 |-----------------------------|--------------------------|
 | Compression vidéo           | Video compression        |
 | Vecteurs de déplacement     | Motion vector            |
-| Estimation de mouvement      | Motion estimation        |
-| Correspondance des blocs     | Block-matching           |
+| Estimation de mouvement     | Motion estimation        |
+| Correspondance des blocs    | Block-matching           |
 
 
 
@@ -47,8 +47,6 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 <br>
 
 
-
-
 Problématique retenue
 -
 Comment compresser une diffusion sportive ?
@@ -56,7 +54,9 @@ Comment compresser une diffusion sportive ?
 
 Objectifs du TIPE du candidat
 -
-- Comprendre le fonctionement d'un codec
+- Comprendre le fonctionement d'un codec de compression vidéo ?
+- Mettre en œuvre un algorithme de compression vidéo.
+- Mettre en œuvre un algorithme de détection/prédictions de mouvements dans une vidéo.
 
 
 
@@ -66,7 +66,6 @@ Objectifs du TIPE du candidat
 
 Bibliographie
 -
-
 **[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
 
 **[2]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
@@ -95,6 +94,7 @@ Bibliographie
 
 Brouillon
 -
+# <br>
 
 <s> **[2]** https://openaccess.thecvf.com/content_ICCV_2019/papers/Rippel_Learned_Video_Compression_ICCV_2019_paper.pdf (p.2) </s>
 
