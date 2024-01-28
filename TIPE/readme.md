@@ -8,7 +8,7 @@ Dans ce contexte, la transmission d’une vidéo non compressée en haute défin
 
 <br>
 L’ensemble des différents algorithmes de compression vidéo, appelés codecs vidéo, reposent tous sur deux principales techniques : la suppression des redondances spatiales et temporelles. Autrement dit, l’objectif est d’exploiter la corrélation entre plusieurs images successives dans le temps, et la corrélation entre les pixels spatialement proches les uns des autres sur la même image.
-Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser à la division du flux d’images. Tous les codecs vidéo, et essentiellement ceux reposant sur la norme H.264, la plus répandue, divisent ce flux en trois types de trame: <strong>[3]</strong>
+Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser à la division du flux d’images. Tous les codecs vidéo, et essentiellement ceux reposant sur la norme H.264, la plus répandue, divisent ce flux en trois types de trame: <strong>[2]</strong>
 
 - des images de type I, images de référence, compressées un minimum et ne dépendent d'aucune autre trame
 - des images de type P, images prédites et interpolées à partir des images précédents, notamment des images de type I
@@ -19,45 +19,63 @@ Une séquence d’images consécutives de ces trois types permet alors de défin
 
 Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B qu'il n'est alors pas nécessaire de transmettre complètement.
 
-Ces données, notamment constituées des vecteurs de mouvement des blocs de pixels et des résidus, sont moins volumineuses que les images en elles même mais sont suffisantes pour reconstruire entièrement une image P ou B à partir de l’image de référence, moyennant une certaine perte, convenable, de détails et de qualité. **[3]**
+Ces données, notamment constituées des vecteurs de mouvement des blocs de pixels et des résidus, sont moins volumineuses que les images en elles même mais sont suffisantes pour reconstruire entièrement une image P ou B à partir de l’image de référence, moyennant une certaine perte, convenable, de détails et de qualité. **[2]**
 
-La construction de ces vecteurs de mouvement se fait par la méthode d'estimation et de compensation de mouvement. Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. **[7]** Par exemple, dans le cadre de la diffusion d'un évenement sportif, de simples vecteurs décrivant le mouvement des pixels représentant une balle peuvent suffire à caractériser les images intermédiaires. Elle fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
+La construction de ces vecteurs de mouvement se fait par la méthode d'estimation et de compensation de mouvement. Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. **[3]** Par exemple, dans le cadre de la diffusion d'un évenement sportif, de simples vecteurs décrivant le mouvement des pixels représentant une balle peuvent suffire à caractériser les images intermédiaires. Elle fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
 
-Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la transformée en cosinus discrète (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. **[5]** Sachant que l'oeil humain perçoit plus facilement les différences de contraste lorsque la fréquence est faible, les coefficients correspondant aux hautes fréquences ont moins d'importance et ces coefficients peuvent alors être quantifiés de manière moins précise voire ignorés. **[5,6]** Ces coefficients sont ensuite compressés à l'aide de l'algorithme de Huffman avant d'être transmis. **[4]**
+Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la transformée en cosinus discrète (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. **[4]** Sachant que l'oeil humain perçoit plus facilement les différences de contraste lorsque la fréquence est faible, les coefficients correspondant aux hautes fréquences ont moins d'importance et ces coefficients peuvent alors être quantifiés de manière moins précise voire ignorés. **[4,5]** Ces coefficients sont ensuite compressés à l'aide de l'algorithme de Huffman avant d'être transmis. **[6]**
 <br>
 <br>
+
+
+Positionnements thématiques
+-
+- Informatique (Informatique pratique)
+
+Mots-clés
+-
+compression vidéo - video compression
+vecteurs de déplacement - motion vector
+- block-matching
+
+
+
+
+
 
 Bibliographie
 -
 
 **[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
 
+**[2]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
+
+**[3]** https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm (Algo de block-matching)
+
+**[4]** https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
+
+**[5]** https://www.youtube.com/watch?v=Q2aEzeMDHMA (DCT explained on JPG images)
+
+**[6]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf (Huffman p.25-28)
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<br>
+
+
+Brouillon
+-
+
 <s> **[2]** https://openaccess.thecvf.com/content_ICCV_2019/papers/Rippel_Learned_Video_Compression_ICCV_2019_paper.pdf (p.2) </s>
-
-**[3]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
-
-**[4]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf (Huffman p.25-28)
-
-**[5]** https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
-
-**[6]** https://www.youtube.com/watch?v=Q2aEzeMDHMA (DCT explained on JPG images)
-
-**[7]** https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm (Algo de block-matching)
-
-
-
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-<br>
-
-<br>
 
 
 Explique la DCT
