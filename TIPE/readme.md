@@ -1,16 +1,16 @@
 # TIPE - Principe de la compression vidéo
 
 ### Ancrage au thème
+Dans la rediffusion sportive, la compression vidéo minimise la taille des fichiers pour une transmission rapide. En utilisant des méthodes de compression, elle optimise la qualité d'image tout en préservant la fluidité des mouvements, améliorant l'expérience en streaming.
 
 ### Motivation du choix
-Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. Pour cela, la compression vidéo
+
 
 Positionnements thématiques
 -
 - Informatique (Informatique pratique)
 
-Mots-clés
--
+###Mots-clés
 | Français                    | Anglais                  |
 |-----------------------------|--------------------------|
 | Compression vidéo           | Video compression        |
@@ -20,7 +20,7 @@ Mots-clés
 
 
 
-Introduction
+Bibliographie commentée
 -
 En 2022, la vidéo représenterait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos à la demande, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. **[1]**
 Dans ce contexte, la transmission d’une vidéo non compressée en haute définition, avec un taux de rafraichissement de 30 images par seconde, nécessiterait un débit de 1,49 Gbps. Cette exigence de bande passante est significativement supérieure à la vitesse moyenne mondiale de connexion, évaluée à 75,4 Mbps. **[1]** Ainsi, la compression vidéo permet d'ajuster la taille des données tout en préservant une qualité visuelle acceptable, facilitant ainsi le stockage, la diffusion et le partage de contenus vidéo sur l'ensemble du réseau.
