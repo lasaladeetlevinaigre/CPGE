@@ -47,7 +47,13 @@ Problématique retenue
 
 Objectifs du TIPE du candidat
 -
-- Comprendre le fonctionement 
+- Comprendre le fonctionement d'un codec de compression vidéo
+- Mettre en oeuvre un algorithme de recherche des blocs dans une image
+- Mettre en oeuvre un algorithme d'interpolation d'image
+
+Présentation
+-
+Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. Pour cela, la compression vidéo 
 
 
 
