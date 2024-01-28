@@ -9,6 +9,8 @@ Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer d
 Positionnements thématiques
 -
 - Informatique (Informatique pratique)
+- Informatique (Informatique théorique)
+- Mathématiques (Analyse) _Transformée de Fourier_
 
 ### Mots-clés
 | Français                    | Anglais                  |
@@ -49,7 +51,7 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 
 Problématique retenue
 -
-Comment compresser une diffusion sportive ?
+Comment déterminer les mouvements à travers une image lors d'une compression vidéo ?
 
 
 Objectifs du TIPE du candidat
