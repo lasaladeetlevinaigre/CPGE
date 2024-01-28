@@ -1,5 +1,53 @@
 
-TIPE
+TIPE - La compression vidéo en temps réel
+==
+
+Introduction
+-
+En 2022, la vidéo représenterait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos à la demande, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. [1]
+
+Dans ce contexte, la transmission d’une vidéo non compressée en haute définition, avec un taux de rafraichissement de 30 images par seconde, requerrait un débit de 1,49 Gbps. Cette exigence de bande passante est significativement supérieure à la vitesse moyenne mondiale de connexion, évaluée à 75,4 Mbps. [1] Ainsi, la compression vidéo permet d'ajuster la taille des données tout en préservant une qualité visuelle acceptable, facilitant ainsi le stockage, la diffusion et le partage de contenus vidéo sur l'ensemble du réseau.
+
+**[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
+
+<br>
+<br>
+L’ensemble des différents algorithmes de compression vidéo, appelés codecs vidéo, reposent sur deux principales techniques : la suppression des redondances spatiales et temporelles. Autrement dit, l’objectif est d’exploiter la corrélation entre plusieurs images successives dans le temps, et la corrélation entre les pixels proches spatialement les uns des autres sur la même image.
+Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser à la division du flux d’images. Tous les codecs vidéo, et essentiellement ceux reposant sur la norme H.264, la plus répandue, divisent ce flux en trois types de trame :
+
+- des images de type I, images de référence, compressées un minimum et ne dépendent d'aucune autre trame
+- des images de type P, images prédites et interpolées à partir des images précédents, notamment des images de type I
+- des images de type B, images dit bidirectionnelles car interpolées à partir des images précédentes mais également à partir des images futures
+
+**[2]** https://openaccess.thecvf.com/content_ICCV_2019/papers/Rippel_Learned_Video_Compression_ICCV_2019_paper.pdf (p.2)
+
+<br>
+<br>
+Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images).
+
+Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B. 
+
+Ces données, notamment constituées des vecteurs de mouvement des blocs de pixels et des résidus, sont moins volumineuses que les images en elles même mais sont suffisantes pour reconstruire entièrement une image P ou B à partir de l’image de référence, moyennant une certaine perte, convenable, de détails et de qualité.
+
+La construction de ces vecteurs de mouvement se fait par la méthode de Motion Estimation (ou estimation de mouvement). Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. Elle fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
+
+**[3]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
+
+
+<br>
+<br>
+
+**[5]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
+
+<br>
+=
+
+Explique la DCT
+Explique comment on peut supprimer des frequences lors de la DCT sans perte de qualité visuelle
+https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
+
+
+
 
 
 
@@ -55,12 +103,6 @@ https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
 
 https://books.google.fr/books?id=e7xnBwAAQBAJ&pg=PA364&redir_esc=y#v=onepage&q&f=false
 https://books.google.fr/books?id=7XuU8T3ooOAC&pg=PA1&redir_esc=y#v=onepage&q&f=false
-
-
-[LIBRAIRIES C]
-ffmpeg - libavcodec
-
-
 
 
 
