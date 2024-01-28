@@ -43,12 +43,14 @@ Importance of I frame pas trop éloignées
 https://ottverse.com/discrete-cosine-transform-dct-video-compression/
 
 
-==================
+--
 A key feature of the H.261 recommendation is the introduction of quantisation to
 reduce the large number of values that are possible for chrominance and luminance p.16
 
+
 https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
-==================
+
+--
 
 
 https://books.google.fr/books?id=e7xnBwAAQBAJ&pg=PA364&redir_esc=y#v=onepage&q&f=false
