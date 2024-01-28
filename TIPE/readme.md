@@ -39,6 +39,7 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 
 **[4]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
 **[5]** https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
+**[6]** https://www.youtube.com/watch?v=Q2aEzeMDHMA (DCT explained on JPG images)
 
 <br>
 =
