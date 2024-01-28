@@ -1,5 +1,5 @@
 # TIPE - Principe de la compression vidéo
-
+	
 ### Ancrage au thème
 Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. La compression vidéo minimise la taille des fichiers pour une transmission rapide. En utilisant des méthodes de compression, elle optimise la qualité d'image tout en préservant la fluidité des mouvements, améliorant l'expérience en streaming.
 
@@ -79,7 +79,6 @@ Bibliographie
 **[5]** https://www.youtube.com/watch?v=Q2aEzeMDHMA (DCT explained on JPG images)
 
 **[6]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf (Huffman p.25-28)
-
 
 
 
