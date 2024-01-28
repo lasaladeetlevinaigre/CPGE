@@ -10,7 +10,7 @@ Positionnements thématiques
 -
 - Informatique (Informatique pratique)
 
-###Mots-clés
+### Mots-clés
 | Français                    | Anglais                  |
 |-----------------------------|--------------------------|
 | Compression vidéo           | Video compression        |
