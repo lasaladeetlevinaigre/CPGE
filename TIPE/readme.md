@@ -23,21 +23,22 @@ Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser �
 
 <br>
 <br>
-Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images).
+Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images). Il est généralement constitué en premier d'une image de référence suivie de plusieurs images intermédiaire, il prend la forme I-B-B-P-B-B-P-B-B
 
-Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B. 
+Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B qu'il n'est alors pas nécessaire de transmettre.
 
 Ces données, notamment constituées des vecteurs de mouvement des blocs de pixels et des résidus, sont moins volumineuses que les images en elles même mais sont suffisantes pour reconstruire entièrement une image P ou B à partir de l’image de référence, moyennant une certaine perte, convenable, de détails et de qualité.
 
-La construction de ces vecteurs de mouvement se fait par la méthode de Motion Estimation (ou estimation de mouvement). Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. Elle fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
+La construction de ces vecteurs de mouvement se fait par la méthode de Motion Estimation (ou estimation de mouvement). Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. Par exemple, dans le cadre de la diffusion d'un évenement sportif, de simples vecteurs décrivant le mouvement des pixels représentant une balle peuvent suffire à caractériser les images intermédiaires. Elle fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
 
 **[3]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
 
-
+Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la trasnformée en cosinus discrète ou Discrete Cosine Transform (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. [5]
 <br>
 <br>
 
-**[5]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
+**[4]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf
+**[5]** https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
 
 <br>
 =
