@@ -1,4 +1,3 @@
-
 TIPE - La compression vidéo en temps réel
 ==
 
@@ -33,7 +32,7 @@ La construction de ces vecteurs de mouvement se fait par la méthode de Motion E
 
 **[3]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
 
-Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la trasnformée en cosinus discrète ou Discrete Cosine Transform (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. [5]
+Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la transformée en cosinus discrète ou Discrete Cosine Transform (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. [5] Sachant que l'oeil humain perçoit plus facilement les différences de contraste lorsque la fréquence est faible, les coefficients correspondant aux hautes fréquences ont moins d'importance et ces coefficients peuvent alors être quantifiés de manière moins précise voire ignorés.
 <br>
 <br>
 
