@@ -22,6 +22,7 @@ Positionnements thématiques
 | Vecteurs de déplacement     | Motion vector            |
 | Estimation de mouvement     | Motion estimation        |
 | Correspondance des blocs    | Block-matching           |
+| Recherche visuel | Visual Search |
 
 
 
