@@ -19,8 +19,7 @@ Positionnements thématiques
 | Français                    | Anglais                  |
 |-----------------------------|--------------------------|
 | Compression vidéo           | Video compression        |
-| Recherche visuelle | Visual Search | 
-
+| Recherche visuelle          | Visual Search            | 
 | Correspondance des blocs    | Block-matching           |
 | Vecteurs de déplacement     | Motion vector            |
 | Estimation de mouvement     | Motion estimation        |
