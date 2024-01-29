@@ -29,14 +29,14 @@ Positionnements thématiques
 
 Bibliographie commentée
 -
-En 2022, la vidéo représenterait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos à la demande, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. **[1]**
+En 2022, la vidéo représentait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. **[1]**
 Dans ce contexte, la transmission d’une vidéo non compressée en haute définition, avec un taux de rafraichissement de 30 images par seconde, nécessiterait un débit de 1,49 Gbps. Cette exigence de bande passante est significativement supérieure à la vitesse moyenne mondiale de connexion, évaluée à 75,4 Mbps. **[1]** Ainsi, la compression vidéo permet d'ajuster la taille des données tout en préservant une qualité visuelle acceptable, facilitant ainsi le stockage, la diffusion et le partage de contenus vidéo sur l'ensemble du réseau.
 
 <br>
 L’ensemble des différents algorithmes de compression vidéo, appelés codecs vidéo, reposent tous sur deux principales techniques : la suppression des redondances spatiales et temporelles. Autrement dit, l’objectif est d’exploiter la corrélation entre plusieurs images successives dans le temps, et la corrélation entre les pixels spatialement proches les uns des autres sur la même image.
 Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser à la division du flux d’images. Tous les codecs vidéo, et essentiellement ceux reposant sur la norme H.264, la plus répandue, divisent ce flux en trois types de trame: <strong>[2]</strong>
 
-- des images de type I, images de référence, compressées un minimum et ne dépendent d'aucune autre trame
+- des images de type I, images de référence, compressées un minimum et ne dépendent d'aucune autre image
 - des images de type P, images prédites et interpolées à partir des images précédents, notamment des images de type I
 - des images de type B, images dit bidirectionnelles car interpolées à partir des images précédentes mais également à partir des images futures
 
