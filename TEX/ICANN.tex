@@ -1,0 +1,114 @@
+\documentclass{cs-mpi}
+\graphicspath{{img/}}
+\uleft{Benjamin ESCUDER}
+\ucent{}
+\uright{Gouvernance d'Internet, ICANN}
+\dleft{}
+\dcent{\thepage}
+\dright{}
+%=========================
+\begin{document}
+\title{Gouvernance d'Internet, ICANN}
+
+%=========================
+\section{La gouvernance d'Internet}
+%
+La gouvernance d’Internet est la coopération de gouvernements, du secteur privé, d’une société civile, d’organisations internationales et d’une communauté technique et académique. Ces différents acteurs débattent ensembles des orientations et de l’évolution d’Internet en matière de standards techniques ou juridiques. La gouvernance d'Internet est d'une importance cruciale en raison de sa capacité à favoriser la libre circulation de l'information et des idées dans le monde entier. Elle se doit donc d'adopter une approche ouverte, transparente et inclusive, fondée sur le principe d'ouverture, la liberté d'expression, le respect des droits de l'homme et de la vie privée, et sur l'accès universel.
+
+%=========================
+\section{L'ICANN}
+\begin{center}
+\includegraphics[height=30mm]{img/Icann_logo.png}
+\end{center}
+
+L'ICANN (\emph{Internet Corporation for Assigned Names and Numbers} ou \emph{Société pour l'attribution des noms de domaine et des numéros sur Internet}) est une organisation américaine à but non lucratif fondée en 1998 et reconnue d’utilité publique dans le monde. Son objectif principal est de s'assurer de l'accessibilité, de la stabilité et de la sécurité d’Internet. L'ICANN est composée principalement de deux organes : la gestion des identificateurs uniques sur Internet et de l'UASG (\emph{Universal Acceptance Steering Group}).
+
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Ajuste l'espacement vertical
+    \setlength{\tabcolsep}{12pt} % Ajuste la marge interne des cellules
+
+    \begin{tabular}{|p{4cm}|p{9cm}|}
+        \hline
+        \textbf{Groupe de travail (WG) UASG} & \textbf{Rôle} \\
+        \hline
+        Technology WG & Supervise les travaux de remédiation sur les normes, les langages de programmation, les outils et les plates-formes de développement. \\
+        \hline
+        Email Address Internationalization (EAI) WG & Supervise l'engagement avec les fournisseurs de logiciels et de services de messagerie pour les rendre prêts pour l'EAI. (Rendre possible d'utiliser des caractères non-ASCII dans les adresses mail)\\
+        \hline
+        Measurement WG & Supervise la mise en place de l'UA (\emph{Universal Acceptance}) dans les outils et les technologies. \\
+        \hline
+        Communications WG & Supervise la stratégie de communication et son exécution en collaboration avec les autres groupes de travail. \\
+        \hline
+        Local Initiatives WG & Conduit la sensibilisation à l'UA, la formation et les engagements des parties prenantes au niveau local. \\
+        \hline
+        UA Ambassador Program & Organise la formation et la sensibilisation au niveau national et régional. \\
+        \hline
+    \end{tabular}
+
+    \caption{Rôles des groupes de travail (WG) de l'UASG}
+    \label{tab:uasg_roles}
+\end{table}
+
+%-------------------------
+\subsection{Attribution des adresses IP}
+L'ICANN supervise la distribution des adresses IP entre les différents registres régionaux internet RIR (\emph{Regional Internet Registry}).
+
+Les RIR gèrent la numérotation des réseaux en systèmes autonomes (ASN), permettant d'identifier ces réseaux de manière unique, cruciaux pour le routage des adresses IP car ils permettent aux paquets de données d'être dirigés efficacement à travers Internet. Les RIR gèrent également l'outil \emph{whois} permettant l'identification inverse en fournissant des informations sur le détenteur d'une adresse IP spécifique.
+
+Ainsi, chaque RIR gère l'ensemble des adresses IP de sa région géographique respective, ils sont au total au nombre de 5:
+
+\begin{itemize}
+    \item \textbf{RIPE-NCC} (Réseaux IP Européens, créé en 1992) pour l'Europe et le Moyen-Orient
+    \item \textbf{APNIC} (Asia Pacific Network Information Center, créé en 1993) pour l'Asie et le Pacifique
+    \item \textbf{ARIN} (American Registry for Internet Numbers, créé en 1997) pour l'Amérique du Nord
+    \item \textbf{LACNIC} (Latin America and Caribbean Network Information Center, créé en 1999) pour l'Amérique latine et les îles des Caraïbes
+    \item \textbf{AfriNIC} (African Network Information Center, créé en 2005) pour l'Afrique
+\end{itemize}
+
+Les RIR doivent disposer de suffisamment d'adresses IP afin de satisfaire aux demandes de leurs régions respectives. De plus, ils sont encouragés à promouvoir la transition vers IPv6, face à l'épuisement des adresses IPv4. Les cinq RIR mondiaux allouent les blocs d’adresses IP (IPv4 et IPv6) dans leurs zones directement aux Fournisseurs d'Accès à Internet (FAI) ou à des Registres Internet Nationaux (NIR) qui les répartissent, à leur tour, aux utilisateurs finaux.
+
+%-------------------------
+\subsection{Gestion du système DNS}
+L'ICANN supervise également les systèmes de noms de domaines DNS (\emph{Domain Name System}) ainsi que l'attribution et l'introduction de nouvelles extensions de domaine.
+Un nom de domaine permet de traduire, grâce au système DNS, en un nom intelligible et facilement mémorisable une adresse IP, et ainsi accéder à un site web. 
+Un nom de domaine se constitue d'une séquence de caractères accompagnée d'une extension de domaine, déterminant le domaine auquel il appartient.
+\subsubsection{Noms de domaines}
+Il existe plusieurs types d’extensions de domaines : 
+
+\begin{itemize}
+    \item \textbf{Domaines de premier niveau (TLD \emph{Top-Level Domains}) :}
+    \begin{itemize}
+        \item \textbf{TLD génériques} (gTLD) : .com, .org, .net, .info, .edu, .gov, etc.
+        \item \textbf{TLD national} (ccTLD) : .us (États-Unis), .uk (Royaume-Uni), .fr (France), etc.
+        \item \textbf{TLD régional} (rTLD) : .asia (Asie), .eu (Europe)
+    \end{itemize}
+    \item \textbf{Domaines de deuxième niveau ou nom de domaine (SLD \emph{Second-Level Domains }) :}
+    \begin{itemize}
+        \item Ce niveau se trouve directement sous le TLD. Exemple : dans "example.com", "example" est le SLD.
+    \end{itemize}
+    \item \textbf{Domaines de premier niveau internationalisés (IDN TLD) :}
+    \begin{itemize}
+        \item Ces TLD permettent l'utilisation de caractères non latins (Unicode au lieu de ASCII) dans les noms de domaine. Exemples : .рф (pour la Russie en cyrillique), .中国 (pour la Chine en chinois).
+    \end{itemize}
+    \item \textbf{Domaines de premier niveau sponsorisés (sTLD) :}
+    \begin{itemize}
+        \item Ces TLD sont gérés par des organisations spécifiques avec des missions particulières. Exemples : .gov (réservé aux entités gouvernementales des États-Unis), .edu (réservé aux institutions éducatives).
+    \end{itemize}
+\end{itemize}
+
+Lorsque l'on enregistre un nom de domaine par le biais d'un Registrar (ou Bureau d'enregistrement de nom de domaine), public ou souvent privé, celui ci est accrédité par l'ICANN. L'enregistrement est ensuite maintenu par un opérateur de registre qui conserve les paramètres DNS et les propage à tout les serveurs TLD, alimentant la base de données principale, cela permet à tous les noms de domaine d'être enregistrés dans chaque domaine de premier niveau.
+
+
+\subsubsection{Système DNS}
+L'ICANN est responsable de 13 serveurs racines dans le monde. Elle n'en est pas propriétaire mais délègue leur hébergement à des coopérations tierces ou à des entreprises. Ces serveurs racines constituent le niveau supérieur du système de noms de domaine et stockent les informatiques sur les TDL (Domaines de premier niveau). Ils redirigent ensuite la requête DNS vers un serveur de noms TLD correspondant à l'extension de domaine de la requête.
+
+Le serveur de noms TLD conserve un registre avec des informations de tous les noms de domaine qui partagent une extension de domaine commune et stocke également une table de correspondance entre les noms de domaine et leur adresses IP, permettant d’acheminer les requêtes DNS vers les serveurs appropriés hébergeant le site en question.
+
+Lors d'une requête DNS, le client envoie d'abord la requête à un DNS Recursive Resolver qui envoie la requête au serveur racine qui répond avec l'adresse du serveur de noms TLD correspond à l'extension de domaine du site recherché. Le DNS Recursive Resolver envoie ensuite la requête au serveur TLD adéquat qui répond avec l'adresse IP du serveur hébergeant le site. (ou un serveur redirigeant vers le serveur hébergeant le site). Notons qu'une fois cette dernière étape effectuée, le DNS Recursive Resolver va garder en mémoire la correspondance effectuée entre nom du site et IP correspondante afin de délivrer l'adresse IP plus rapidement lors d'une prochaine requête vers le même site en quesition.
+
+
+
+%=========================
+\end{document}
