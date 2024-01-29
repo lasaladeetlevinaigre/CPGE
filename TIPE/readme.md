@@ -41,7 +41,7 @@ Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser �
 - des images de type B, images dit bidirectionnelles car interpolées à partir des images précédentes mais également à partir des images futures
 
 <br>
-Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images). Il est généralement constitué en premier d'une image de référence suivie de plusieurs images intermédiaire, il prend la forme I-B-B-P-B-B-P-B-B
+Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images).
 
 Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B qu'il n'est alors pas nécessaire de transmettre complètement.
 
@@ -101,6 +101,9 @@ Bibliographie
 Brouillon
 -
 # <br>
+
+
+ #### Il est généralement constitué en premier d'une image de référence suivie de plusieurs images intermédiaire, il prend la forme I-B-B-P-B-B-P-B-B
 
 <s> **[2]** https://openaccess.thecvf.com/content_ICCV_2019/papers/Rippel_Learned_Video_Compression_ICCV_2019_paper.pdf (p.2) </s>
 
