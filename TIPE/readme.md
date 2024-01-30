@@ -75,13 +75,23 @@ Bibliographie
 -
 **[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
 
+<br>
+
 **[2]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf (GOP p.29, DCT p.31)
+
+<br>
 
 **[3]** https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm (Algo de block-matching)
 
+<br>
+
 **[4]** https://interstices.info/de-fourier-a-la-compression-dimages-et-de-videos/
+Interstices, "De Fourier à la compression d’images et de vidéos": Christine Guillemot,Aline Roumy
+<br>
 
 **[5]** https://www.youtube.com/watch?v=Q2aEzeMDHMA (DCT explained on JPG images)
+
+<br>
 
 **[6]** https://eprints.nottingham.ac.uk/13447/1/thesis.pdf (Huffman p.25-28)
 
