@@ -1,16 +1,23 @@
 # TIPE - Principe de la compression vidéo
+
+### Motivation du choix
+~~La compression vidéo est très répendue sur l'ensemble d'Internet / dans notre quotidien. Cependant, son fonctionnement semble invisibl(se fait en interne). J'ai donc trouvé interressant de s'interresser à comment celle ci fonctionne.~~
+~~La compression vidéo est omniprésente sur Internet et donc dans notre quotidien. Cependant, son fonctionnement est souvent invisible et j'ai trouve intéressant d'explorer comment elle opère en interne.~~
+
+Les contenus vidéos sont omniprésents dans notre quotidien. Cependant, on ne pense pas toujours aux techniques qui en rendent la diffusion possible, telles que la compression vidéo. C'est pourquoi j'ai trouvé intéressant de comprendre son fonctionnement.
+
+
 	
 ### Ancrage au thème
 
 <p align="justify">
-Dans le cadre d'une rediffusion d'un événement sportif, on souhaite disposer de la meilleure qualité d'image possible. La compression vidéo minimise la taille des fichiers pour une transmission rapide. En utilisant des méthodes de compression, elle optimise la qualité d'image tout en préservant la fluidité des mouvements, améliorant l'expérience du streaming.
-	
-	
-### Motivation du choix
+La compression vidéo minimise la taille des données pour une transmission fluide et rapide. Son utilisation paraît donc tout à fait légitime, notamment dans le cadre de la diffusion d'un événement sportif, pendant lequel on souhaite disposer de la meilleure fluidité et qualité d'image possible.
 
 
-Positionnements thématiques
--
+ 
+
+## Positionnements thématiques
+
 - Informatique (Informatique pratique)
 - Informatique (Informatique théorique)
 - Mathématiques (Analyse) _Transformée de Fourier_
@@ -27,8 +34,7 @@ Positionnements thématiques
 
 
 
-Bibliographie commentée
--
+## Bibliographie commentée
 En 2022, la vidéo représentait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. **[1]**
 Dans ce contexte, la transmission d’une vidéo non compressée en haute définition, avec un taux de rafraichissement de 30 images par seconde, nécessiterait un débit de 1,49 Gbps. Cette exigence de bande passante est significativement supérieure à la vitesse moyenne mondiale de connexion, évaluée à 75,4 Mbps. **[1]** Ainsi, la compression vidéo permet d'ajuster la taille des données tout en préservant une qualité visuelle acceptable, facilitant ainsi le stockage, la diffusion et le partage de contenus vidéo sur l'ensemble du réseau.
 
@@ -54,24 +60,17 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 <br>
 
 
-Problématique retenue
--
+## Problématique retenue
 Comment déterminer les mouvements à travers une image lors d'une compression vidéo ?
 
 
-Objectifs du TIPE du candidat
--
+## Objectifs du TIPE du candidat
 - Comprendre le fonctionement d'un codec de compression vidéo ?
 - Mettre en œuvre un algorithme de compression vidéo.
 - Mettre en œuvre un algorithme de détection/prédictions de mouvements dans une vidéo.
 
 
-
-
-
-
-
-Bibliographie
+## Bibliographie
 -
 **[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
 
@@ -109,7 +108,7 @@ Interstices, "De Fourier à la compression d’images et de vidéos": Christine 
 
 
 Brouillon
--
+=
 # <br>
 
 
