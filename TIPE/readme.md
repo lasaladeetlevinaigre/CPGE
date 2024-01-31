@@ -61,13 +61,14 @@ Une autre approche de la compression video consiste à faire usage de la redonda
 
 
 ## Problématique retenue
-Comment déterminer les mouvements à travers une image lors d'une compression vidéo ?
+Comment identifier et déterminer les mouvements des objets à travers plusieurs images et comment les exploiter dans le cadre de la compression vidéo ?
 
 
 ## Objectifs du TIPE du candidat
-- Comprendre le fonctionement d'un codec de compression vidéo ?
+- Comprendre le fonctionnement d'un codec de compression vidéo.
+- Étudier et mettre en œuvre différents algorithmes de détection de mouvement dans une vidéo.
+- Comparer la complexité et la qualité de ces différents algorithmes de recherche.
 - Mettre en œuvre un algorithme de compression vidéo.
-- Mettre en œuvre un algorithme de détection/prédictions de mouvements dans une vidéo.
 
 
 ## Bibliographie
