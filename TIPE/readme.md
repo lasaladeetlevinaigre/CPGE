@@ -1,9 +1,6 @@
 # TIPE - Principe de la compression vidéo
 
 ### Motivation du choix
-~~La compression vidéo est très répendue sur l'ensemble d'Internet / dans notre quotidien. Cependant, son fonctionnement semble invisibl(se fait en interne). J'ai donc trouvé interressant de s'interresser à comment celle ci fonctionne.~~
-~~La compression vidéo est omniprésente sur Internet et donc dans notre quotidien. Cependant, son fonctionnement est souvent invisible et j'ai trouve intéressant d'explorer comment elle opère en interne.~~
-
 Les contenus vidéos sont omniprésents dans notre quotidien. Cependant, on ne pense pas toujours aux techniques qui en rendent la diffusion possible, telles que la compression vidéo. C'est pourquoi j'ai trouvé intéressant de comprendre son fonctionnement.
 
 
@@ -67,9 +64,8 @@ Comment identifier et déterminer les mouvements des objets à travers plusieurs
 ## Objectifs du TIPE du candidat
 - Comprendre le fonctionnement d'un codec de compression vidéo.
 - Étudier et mettre en œuvre différents algorithmes de détection de mouvement dans une vidéo.
-- Comparer la complexité et la qualité de ces différents algorithmes de recherche.
+- Comparer la complexité et mesurer la qualité de ces différents algorithmes de recherche.
 - Mettre en œuvre un algorithme de compression vidéo.
-
 
 ## Bibliographie
 -
@@ -197,3 +193,11 @@ Different algo de blockmatching
 	- 3 Step search
 	- 2D Logarithmic
 https://course.ece.cmu.edu/~ee899/project/deepak_mid.htm
+
+
+
+
+~~La compression vidéo est très répendue sur l'ensemble d'Internet / dans notre quotidien. Cependant, son fonctionnement semble invisibl(se fait en interne). J'ai donc trouvé interressant de s'interresser à comment celle ci fonctionne.~~
+~~La compression vidéo est omniprésente sur Internet et donc dans notre quotidien. Cependant, son fonctionnement est souvent invisible et j'ai trouve intéressant d'explorer comment elle opère en interne.~~
+
+
