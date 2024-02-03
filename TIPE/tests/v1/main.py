@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -305,25 +306,39 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 ####################### STATS #######################
 #####################################################
 
+def show_diffs_calulees(liste):
+    l_max = liste[0]
+    for element in liste:
+        if l_max <= element:
+            l_max = element
 
 
+    occurrences = np.array([0 for k in range(math.ceil(l_max / 10)+1)])
+
+    for element in liste:
+        occurrences[math.ceil(element / 10)] += 1
 
 
+    print("\n\n")
+    print("*"*35)
+    print("********* Analyse des différences *********")
+    print("*"*35)
 
+    print(f"{len(liste)} éléments")
+    print(f"{np.mean(liste):.2f} en moyenne")
 
+    print(occurrences)
 
+    print("\n\n")
 
-
-
-
-
-
-
-
-
-
-
-
+    
+    plt.figure(figsize=(8, 6))
+    plt.bar(np.arange(len(occurrences)), occurrences, align='center', alpha=0.7)
+    plt.xlabel('Centaines')
+    plt.ylabel('Occurrences')
+    plt.title('Occurrences par intervalle de 10')
+    plt.grid(True)
+    plt.show()
 
 
 
@@ -367,26 +382,26 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 ###################### FICHIERS #####################
 #####################################################
 
-def extractFramesOfVideo(path, nombre=2):
+def extractFramesOfVideo(path, interval=10):
     """
-    Sort {nombre} images de la video mp4
+    Sort deux images à {interval}frames d'intervalle
     """
     capture = cv2.VideoCapture(path)
+
+    matrice1 = []
+
+    #timestamp = capture.get(cv2.CAP_PROP_POS_MSEC)
     capture.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
+    _, matrice1 = capture.read()
 
-    frames = np.array(nombre)
+    capture.set(cv2.CAP_PROP_POS_FRAMES, interval)
 
-
-    for i in range(nombre):
-        _, frame = capture.read()
-        frames[i] = frame
-
-        capture.set(cv2.CAP_PROP_POS_FRAMES, i)
+    _, matrice2 = capture.read()
 
     capture.release()
 
-    return frames
+    return matrice1, matrice2
 
 
 def readImg(path):
@@ -534,6 +549,51 @@ def getNeighs(b1):
                     neigh.append(k)
     return neigh
 
+"""
+
+
+    for a in range(-block_search_radius, block_search_radius+1):
+        for b in range(-block_search_radius, block_search_radius+1):
+
+            k = (i+a)*nombre_blocks_x + j+b
+
+            x, y = k//nombre_blocks_x, k%nombre_blocks_x
+
+            if( k >= 0 and k < nombre_blocks and y >= j-block_search_radius and y <= j+block_search_radius) :
+                neigh.append(k)
+"""         
+
+
+diffs_calulees = []
+def calculateBlockDifferenceSquare(b1, img1, b2, img2):
+    x_ref1, y_ref1 = block2coordTopLeftCorner(b1)
+    x_ref2, y_ref2 = block2coordTopLeftCorner(b2)
+
+    diff = [0, 0, 0]
+    size = wblock*hblock
+
+    for i in range(wblock//pas_calcul_difference):
+        for j in range(hblock//pas_calcul_difference):
+            x1 = i*pas_calcul_difference+x_ref1
+            y1 = j*pas_calcul_difference+y_ref1
+
+            x2 = i*pas_calcul_difference+x_ref2
+            y2 = j*pas_calcul_difference+y_ref2
+
+            diff[0] += pow( ( int(img1[y1, x1][0]) - int(img2[y2, x2][0]) ), 2)
+            diff[1] += pow( ( int(img1[y1, x1][1]) - int(img2[y2, x2][1]) ), 2)
+            diff[2] += pow( ( int(img1[y1, x1][2]) - int(img2[y2, x2][2]) ), 2)
+
+            #print(diff)
+
+    diff = diff[0] + diff[1] + diff[2]
+    #a, b, c = np.sqrt(diff)
+
+    diffs_calulees.append(diff)
+    return diff
+
+
+
 
 def SAD(b1, img1, b2, img2):
     x_ref1, y_ref1 = block2coordTopLeftCorner(b1)
@@ -564,16 +624,84 @@ def SAD(b1, img1, b2, img2):
 
 
 
+
+def blockPlusRessemblant(b1, img1_avg, img2_avg, exclus):
+    min_diff = math.inf
+    b2 = -1
+
+    for k in getNeighs(b1):
+        if exclus[k] == 0:
+            diff = abs( img1_avg[b1][0] - img2_avg[k][0] ) + abs( img1_avg[b1][1] - img2_avg[k][1] ) +abs( img1_avg[b1][2] - img2_avg[k][2] )
+            if diff < min_diff:
+                min_diff = diff
+                b2 = k
+    return b2
+
+
+
+
+def blockPlusRessemblant2(b1, img1, img2, exclus):
+    # exclus = np.zeros(nombre_blocks)
+
+    min_diff = math.inf
+    b2 = -1
+
+    for k in getNeighs(b1):
+        if exclus[k] == 0:
+            diff = SAD(b1, img1, k, img2)
+            if diff < min_diff:
+                min_diff = diff
+                b2 = k
+    return b2
+
+def blockPlusRessemblant3(b1, img1, img2, exclus = None):
+    if exclus == None:
+        exclus = np.zeros(nombre_blocks)
+    min_diff = math.inf
+    b2 = -1
+
+    for k in getNeighs(b1):
+        if exclus[k] == 0:
+
+
+            diff = SAD(b1, img1, k, img2)
+
+            if diff < diff_minimale:
+                if b2 == -1:
+                    b2 = k
+                if diff < min_diff:
+                    min_diff = diff
+                    b2 = k
+    return b2
+
+def blockPlusRessemblant4(b1, img1, img2, exclus):
+
+    for k in getNeighs(b1):
+        if exclus[k] == 0:
+            diff = SAD(b1, img1, k, img2)
+            if diff < diff_minimale:
+                return k
+
+    return -1
+
+
+
+
 def buildMotionVector(img1, img2):
 
     exclus = np.zeros(nombre_blocks, dtype=np.uint8)
     vecteurs = np.zeros(nombre_blocks)
+
+    img1_avg = np.array( [blockAverageColor(k, img1) for k in range(0, nombre_blocks)] )
+    img2_avg = np.array( [blockAverageColor(k, img2) for k in range(0, nombre_blocks)] )
+
 
 
     for k in range(nombre_blocks):
         if k%100 == 0:
             print(f"vecteurs bloc {k} calculés")
 
+        #conjugue = blockPlusRessemblant(k, img1_avg, img2_avg, exclus)
         conjugue = TDL(img1, img2, k)
 
         exclus[conjugue] = 1
@@ -581,6 +709,69 @@ def buildMotionVector(img1, img2):
         vecteurs[k] = conjugue
 
     return vecteurs
+
+
+
+
+
+def buildIntermediateFrame(vectors, img_ref, path, nb_frame, display=False):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+    frame = img_ref
+    previous_frame = img_ref
+
+
+    for t in range(nb_frame+1):
+
+        # Fond blanc
+        # frame = np.ones((hframe, wframe, 3), dtype=np.uint8) * 255
+
+        for k in range(nombre_blocks):
+            j, i = k//nombre_blocks_x, k%nombre_blocks_x
+
+            x0, y0 = block2coordTopLeftCorner(k)
+
+            if vectors[k] != -1:
+                # Le bloc source possède un bloc image 
+
+                j_prim, i_prim = vectors[k]//nombre_blocks_x, vectors[k]%nombre_blocks_x
+                dx, dy = i_prim-i, j_prim-j
+
+
+                block_a_remplir = (i + round(dx * t/nb_frame)) + (j + round(dy * t/nb_frame)) * nombre_blocks_x
+
+                #print(f"bloc {k} conjugué au bloc {vectors[k]} -> mvnt(dx:{dx},dy:{dy}) donc sur frame {t} on rempli le bloc {block_a_remplir}")
+
+
+                x1, y1 = block2coordTopLeftCorner(block_a_remplir)
+
+                for i in range(wblock):
+                    for j in range(hblock):
+                        frame[y1 + j, x1 + i] = img_ref[y0 + j, x0 + i]
+
+            else:
+                # Le bloc n'a pas d'image
+                # On prend (par transparence) le bloc a la meme place dans l'image precedente
+                for i in range(wblock):
+                    for j in range(hblock):
+                        frame[y0 + j, x0 + i] = previous_frame[y0 + j, x0 + i]
+                        #frame[y0 + j, x0 + i] = [255, 255, 255]
+
+
+        if display:
+            displayImageWithBlock(frame)
+
+        writeImage(frame, f"{path}/f{t}")
+        pass
+
+    return
+
+
+
+
+
 
 
 
@@ -666,6 +857,41 @@ def TDL(img1, img2, bref, display=False):
 
 
 
+def testTDL(img1, img2):
+    vecteurs = -np.ones(nombre_blocks)
+    for k in range(nombre_blocks):
+        if blockAverageColor(k, img1) != [255,255,255]:
+            vecteurs[k] = TDL(img1, img2, k)
+            if k%1000 == 1:
+                print(k)
+            # print(f"{k} --> {vecteurs[k]}")
+
+    displayVectorMap(vecteurs, img2)
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -673,9 +899,9 @@ def TDL(img1, img2, bref, display=False):
 
 if __name__ == "__main__":
 
-    img1, img2 = extractFramesOfVideo("tests/8balls.mp4", 2)
-    # img1 = readImg("tests/gradient31.png")
-    # img2 = readImg("tests/gradient32.png")
+    # img1, img2 = extractFramesOfVideo("sea_shore.mp4", 10)
+    img1 = readImg("tests/gradient31.png")
+    img2 = readImg("tests/gradient32.png")
 
 
 
