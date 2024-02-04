@@ -131,12 +131,16 @@ def displayImageWithNeighs(img, b):
 
 
 
+
+
+
+
+
+
 def displayImageWithBlock(img, highlight=[]):
     clr_contour = [255, 0, 0]
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
-
-    
 
     temp = deepcopy(img)
 
@@ -144,7 +148,7 @@ def displayImageWithBlock(img, highlight=[]):
         x0, y0 = block2coordTopLeftCorner(k)
 
         if k in highlight:
-            clr_contour[0] = 0
+            clr_contour = [0, 255, 255]
             for i in range(wblock):
                 temp[y0, i + x0] = clr_contour
                 temp[y0+1, i + x0] = clr_contour
@@ -158,7 +162,7 @@ def displayImageWithBlock(img, highlight=[]):
                 temp[y0 + i, x0+wblock-1] = clr_contour
 
         else:
-            clr_contour[0] = 255
+            clr_contour = [255, 0, 0]
             for i in range(wblock):
                 temp[y0, i + x0] = clr_contour
             for i in range(hblock):
@@ -184,6 +188,11 @@ def displayImageWithBlock(img, highlight=[]):
 
 
 
+
+
+
+
+
 def displayTabPixels(tableau):
     for ligne in tableau:
         ligne_str = ''
@@ -192,6 +201,11 @@ def displayTabPixels(tableau):
                 ligne_str += f'{couleur:3d}.'.rjust(3)  # alignement à droite avec une largeur de 5 char par composante
             ligne_str += ''
         print(ligne_str)
+
+
+
+
+
 
 
 
@@ -369,20 +383,29 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 
 def extractFramesOfVideo(path, nombre=2):
     """
-    Sort {nombre} images de la video mp4
+    Retourne {nombre} images succesives de la video mp4
     """
     capture = cv2.VideoCapture(path)
-    capture.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
+    if not capture.isOpened():
+        # Vérifier si la vidéo est ouverte avec succès
+        print("Erreur lors de l'ouverture de la vidéo.")
+        return None
 
-    frames = np.array(nombre)
-
+    # Initialiser l'array pour stocker les frames
+    frames = np.empty((nombre,) + (int(capture.get(4)), int(capture.get(3)), 3), dtype=np.uint8)
 
     for i in range(nombre):
-        _, frame = capture.read()
-        frames[i] = frame
-
+        ret, frame = capture.read()
+        # capture.set(cv2.CAP_PROP_POS_FRAMES, 10)
         capture.set(cv2.CAP_PROP_POS_FRAMES, i)
+
+        if not ret:
+            # La lecture a échoué
+            print(f"Échec de la lecture de la trame {i}.")
+            break
+
+        frames[i] = frame
 
     capture.release()
 
@@ -596,6 +619,7 @@ def isBlockOutside(k):
 def TDL(img1, img2, bref, display=False):
     p = block_search_radius
     centre = bref
+    step = 0
 
     while p > 1:
         # Nord - Sud - CENTRE - Ouest - Est
@@ -617,6 +641,12 @@ def TDL(img1, img2, bref, display=False):
             del points[centre-p]
         if ((centre+p)//nombre_blocks_x != centre//nombre_blocks_x) or isBlockOutside(centre+p):
             del points[centre+p]
+
+        # Ajoute les 9 cases voisines du centre
+        # if step == 0:
+        #     for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
+        #         if not isBlockOutside(k):
+        #             points.update({k: float("+inf")})
 
 
         for pt, val in points.items():
@@ -643,6 +673,8 @@ def TDL(img1, img2, bref, display=False):
         else:
             centre = smallest_pt
 
+        step += 1
+
 
     # step 3
     # on cherche parmi les neuf blocs autour du centre
@@ -663,6 +695,21 @@ def TDL(img1, img2, bref, display=False):
         displayImageWithBlock(img2, [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ])
 
     return smallest_pt
+
+
+
+def testTDL(img1, img2):
+    vecteurs = -np.ones(nombre_blocks)
+    for k in range(nombre_blocks):
+        if blockAverageColor(k, img1) != [255,255,255]:
+            vecteurs[k] = TDL(img1, img2, k)
+            if k%100 == 1:
+                print(f"{k}")
+            # print(f"{k} --> {vecteurs[k]}")
+
+    displayVectorMap(vecteurs, img2)
+    return
+
 
 
 
@@ -728,15 +775,16 @@ if __name__ == "__main__":
 
     displayBlockNumbers = False
 
-    name_test = "gradient"
+    name_test = "8balls"
 
 
 
 
-    displayImageWithBlock(img1, [])
+    displayImageWithBlock(img1, [464])
+    displayImageWithBlock(img2, [464])
     # displayImageWithBlock(img2, [71, 138])
 
-    # print(TDL(img1, img2, 34, display=True))
+    # print(TDL(img1, img2, 464, display=True))
     testTDL(img1, img2)
 
 
