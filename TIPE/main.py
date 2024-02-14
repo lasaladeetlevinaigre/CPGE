@@ -381,7 +381,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 ###################### FICHIERS #####################
 #####################################################
 
-def extractFramesOfVideo(path, nombre=2):
+def extractFramesOfVideo(path, offset=0, nombre=2):
     """
     Retourne {nombre} images succesives de la video mp4
     """
@@ -395,14 +395,16 @@ def extractFramesOfVideo(path, nombre=2):
     # Initialiser l'array pour stocker les frames
     frames = np.empty((nombre,) + (int(capture.get(4)), int(capture.get(3)), 3), dtype=np.uint8)
 
+    capture.set(cv2.CAP_PROP_POS_FRAMES, offset)
+
     for i in range(nombre):
         ret, frame = capture.read()
         # capture.set(cv2.CAP_PROP_POS_FRAMES, 10)
-        capture.set(cv2.CAP_PROP_POS_FRAMES, i)
+        capture.set(cv2.CAP_PROP_POS_FRAMES, i+offset)
 
         if not ret:
             # La lecture a échoué
-            print(f"Échec de la lecture de la trame {i}.")
+            print(f"Échec de la lecture de la trame {i+offset}.")
             break
 
         frames[i] = frame
@@ -720,7 +722,7 @@ def testTDL(img1, img2):
 
 if __name__ == "__main__":
 
-    img1, img2 = extractFramesOfVideo("tests/8balls.mp4", 2)
+    img1, img2 = extractFramesOfVideo("tests/8balls.mp4", offset=0, nombre=2)
     # img1 = readImg("tests/gradient31.png")
     # img2 = readImg("tests/gradient32.png")
 
