@@ -5,6 +5,7 @@ import math
 import os
 from copy import deepcopy
 import matplotlib.pyplot as plt
+from scipy.fftpack import dct, idct
 
 
 
@@ -49,12 +50,12 @@ def displayBlock(b, img):
             tab[j, i] = img[j+y0, i+x0]
 
     #displayTabPixels(tab)
-    plt.imshow(tab[:, :, ::-1])
+    plt.imshow(tab)
     plt.show()
 
 
 def displayImage(img):
-    plt.imshow(img[:, :, ::-1])
+    plt.imshow(img)
     plt.show()
 
 
@@ -90,7 +91,7 @@ def displayImageWithNeighs2(img, b):
                 cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
 
-    plt.imshow(temp[:, :, ::-1])
+    plt.imshow(temp)
     plt.show()
 
 def displayImageWithNeighs(img, b):
@@ -122,7 +123,7 @@ def displayImageWithNeighs(img, b):
                 for j in range(hblock):
                     temp[y0+j, x0+i] = [0, 0, 0]
 
-    plt.imshow(temp[:, :, ::-1])
+    plt.imshow(temp)
     plt.show()
 
 
@@ -167,7 +168,7 @@ def displayImageWithBlock(img, highlight=[]):
                 temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    ax.imshow(temp[:, :, ::-1])
+    ax.imshow(temp)
 
     for k in range(nombre_blocks):
         x0, y0 = block2coordTopLeftCorner(k)
@@ -241,7 +242,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 
     fig, ax = plt.subplots(figsize=(8, 6))
 
-    ax.imshow(temp[:, :, ::-1])
+    ax.imshow(temp)
 
     for k in range(nombre_blocks):
 
@@ -280,6 +281,53 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
     plt.show()
 
     return
+
+
+def getDCTcoeffs(image, display=False):
+    """
+    A partir d'une image RGB !! 
+    """
+    # Convert the image to float32
+    image_float32 = image.astype(np.float32) / 255.0
+
+    # Display the original RGB image
+    if display:
+        plt.subplot(3, 3, 4)
+        plt.imshow(image)
+        plt.title('Original RGB Image')
+
+    # Apply 2D DCT to each color channel
+    dct_image = np.zeros_like(image_float32)
+    for i in range(3):  # Loop over R, G, B channels
+        dct_image[:, :, i] = dct(dct(image_float32[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
+
+    dct_image2 = np.round(dct_image/pas_quantization).astype(int)
+
+    # Display the DCT coefficients for each channel
+    if display:
+        RGB = ["R", "G", "B"]
+        reconstructed_image = np.zeros_like(image)
+
+        for i in range(3):  # Boucler sur les canaux R, G, B
+            plt.subplot(3, 3, i*3+2)
+            plt.imshow(np.log(np.abs(dct_image[:, :, i]) + 1), cmap='gray')  # Log-scaled pour une meilleure visualisation
+            plt.title(f'DCT Coefficients (Canal {RGB[i]})')
+
+
+            reconstructed_image[:, :, i] = idct(idct(dct_image[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
+
+        # Clipper les valeurs pour les ramener dans la plage [0, 1]
+        reconstructed_image = np.clip(reconstructed_image, 0, 1)*255
+
+        plt.subplot(3, 3, 6)
+        plt.imshow(reconstructed_image)
+        plt.title('Reconstructed RGB Image')
+
+        plt.show()
+
+    return dct_image2
+
+
 
 
 
@@ -478,20 +526,20 @@ def lire_csv(nom_fichier):
 
 
 
-def YCrCb2BGR(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
+def BGR2RGB(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+def RGB2YCrCb(image):
+    return cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
 
 
 
-def BGR2YCrCb(image):
-    return cv2.cvtColor(image, cv2.COLOR_YCrCb2BGR)
+def YCrCb2RGB(image):
+    return cv2.cvtColor(image, cv2.COLOR_YCrCb2RGB)
 
 
-def BGR2GRAY(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-
-
+def RGB2GRAY(image):
+    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
 
 
@@ -770,7 +818,7 @@ def getVector(img1, img2, b_ref, display=False):
 
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    ax.imshow(img2[:, :, ::-1])
+    ax.imshow(img2)
 
     x0, y0 = block2coordTopLeftCorner(b_ref)
     # Coordonnées de départ pour la flèche (au centre du rectangle)
@@ -804,11 +852,12 @@ def getVector(img1, img2, b_ref, display=False):
 
 if __name__ == "__main__":
 
-    img1 = readImg("tests/car1.png")
-    img2 = readImg("tests/car2.png")
+    # img1 = readImg("tests/car1.png")
+    # img2 = readImg("tests/car2.png")
     img1, img2 = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=0, nombre=2, pas=2)
-    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/sea_shore.mp4", offset=0, nombre=2, pas=1)
+    # img1, img2 = extractFramesOfVideo("/users/escud/Desktop/sea_shore.mp4", offset=0, nombre=2, pas=1)
 
+    img1,img2 = BGR2RGB(img1), BGR2RGB(img2)
 
     print("")
     print("******"*10)
@@ -819,8 +868,8 @@ if __name__ == "__main__":
 
     # wframe = 256
     # hframe = 512
-    wblock = 4*3
-    hblock = 4*3
+    wblock = 4*2
+    hblock = 4*2
 
     #nombre_blocks = 1600
     nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -843,7 +892,9 @@ if __name__ == "__main__":
 
 
     pas_calcul_difference = 1
-    diff_minimale = 10000
+
+    pas_quantization = 1
+
 
     print("")
     print("******"*10)
@@ -857,50 +908,11 @@ if __name__ == "__main__":
 
 
     displayBlockNumbers = False
-
     name_test = "crossing"
 
+    # displayImage(img1)
+    # displayImage(img2)
+    residu = img2 - img1
+    displayImage(residu)
 
-
-
-    k = coordTopLeftCorner2block(832, 305)
-    print(f"phare img1, {k}")
-
-    displayImageWithBlock(img1, [k, 500])
-    displayImageWithBlock(img2, [k, 500])
-
-    overall = SADAnchors(img1, img2, block2coordTopLeftCorner(k), block2coordTopLeftCorner(k+1))
-    print(getVector(img1, img1, k))
-
-    # cv2.imshow('', BGR2GRAY(img2)-BGR2GRAY(img1))
-    # cv2.waitKey(0)
-
-
-
-
-    # print(TDL(img1, img2, k, display=True))
-    # testTDL(img1, img2)
-
-
-
-
-
-
-    # vecteurs = buildMotionVector(img1, img2)
-    # displayVectorMap(vecteurs, img2)
-
-    # ecrire_csv("tests/vectorsTDL.csv", np.array(vecteurs))
-
-
-    # for k in range(nombre_blocks):
-    #     pass
-    #     print(f"{k} --> {vecteurs[k]}")
-
-    # displayVectorMap(vecteurs, img1, True, "vectors.png")
-
-
-
-    # show_diffs_calulees(diffs_calulees)
-
-    # buildIntermediateFrame(vecteurs, img1, f"out/{name_test}", 10, False)
-    # images2Video(f"out/{name_test}")
+    # print(getDCTcoeffs(residu, True))

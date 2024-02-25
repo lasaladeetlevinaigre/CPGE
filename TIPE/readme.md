@@ -4,12 +4,12 @@
 Les contenus vidéos sont omniprésents dans notre quotidien. Cependant, on ne pense pas toujours aux techniques qui en rendent la diffusion possible, telles que la compression vidéo. C'est pourquoi j'ai trouvé intéressant de comprendre son fonctionnement.
 
 
-	
+
 ### Ancrage au thème
 
 <p align="justify">
 La compression vidéo minimise la taille des données pour une transmission fluide et rapide. Son utilisation paraît donc tout à fait légitime, notamment dans le cadre de la diffusion d'un événement sportif, pendant lequel on souhaite disposer de la meilleure fluidité et qualité d'image possible.
-
+</p>
 
  
 
@@ -32,18 +32,21 @@ La compression vidéo minimise la taille des données pour une transmission flui
 
 
 ## Bibliographie commentée
+<p align="justify">
 En 2022, la vidéo représentait environ 82% du trafic IP total sur Internet. Cela inclut le streaming vidéo, les vidéos en direct, les appels vidéo, et autre forme de contenu visuel. **[1]**
 Dans ce contexte, la transmission d’une vidéo non compressée en haute définition, avec un taux de rafraichissement de 30 images par seconde, nécessiterait un débit de 1,49 Gbps. Cette exigence de bande passante est significativement supérieure à la vitesse moyenne mondiale de connexion, évaluée à 75,4 Mbps. **[1]** Ainsi, la compression vidéo permet d'ajuster la taille des données tout en préservant une qualité visuelle acceptable, facilitant ainsi le stockage, la diffusion et le partage de contenus vidéo sur l'ensemble du réseau.
-
+</p>
 <br>
+<p align="justify">
 L’ensemble des différents algorithmes de compression vidéo, appelés codecs vidéo, reposent tous sur deux principales techniques : la suppression des redondances spatiales et temporelles. Autrement dit, l’objectif est d’exploiter la corrélation entre plusieurs images successives dans le temps, et la corrélation entre les pixels spatialement proches les uns des autres sur la même image.
 Pour comprendre le fonctionnement d’un codec vidéo, il faut s’intéresser à la division du flux d’images. Tous les codecs vidéo, et essentiellement ceux reposant sur la norme H.264, la plus répandue, divisent ce flux en trois types de trame: <strong>[2]</strong>
-
+</p>
 - des images de type I, images de référence, compressées un minimum et ne dépendent d'aucune autre image
 - des images de type P, images prédites et interpolées à partir des images précédents, notamment des images de type I
 - des images de type B, images dit bidirectionnelles car interpolées à partir des images précédentes mais également à partir des images futures
 
 <br>
+<p align="justify">
 Une séquence d’images consécutives de ces trois types permet alors de définir un GOP (ou groupe d’images).
 
 Dans la pratique, l’encodeur stocke, ou transmet au décodeur, uniquement les images de référence I et quelques données sur les images P et B qu'il n'est alors pas nécessaire de transmettre complètement.
@@ -53,6 +56,7 @@ Ces données, notamment constituées des vecteurs de mouvement des blocs de pixe
 La construction de ces vecteurs de mouvement se fait par la méthode d'estimation et de compensation de mouvement. Cette technique consiste à détecter le déplacement des éléments d’une image à l’autre. **[3]** Par exemple, dans le cadre de la diffusion d'un évenement sportif, de simples vecteurs décrivant le mouvement des pixels représentant une balle peuvent suffire à caractériser les images intermédiaires. Cette méthode fait partie de la prédiction inter-images dont le but est de de tirer parti de la redondance temporelle en exploitant les similarités entre chaque trame ou parties de trame voisines.
 
 Une autre approche de la compression video consiste à faire usage de la redondance spatiale. Cette compression intra-frame, se concentrant sur une seule image, est très utilisé dans le domainde de la compression d'image. Une technique fondamentale employée est la transformée en cosinus discrète (DCT) qui est au cœur de tous les standards de compression JPEG et MPEG depuis 30 ans. **[4]** Sachant que l'oeil humain perçoit plus facilement les différences de contraste lorsque la fréquence est faible, les coefficients correspondant aux hautes fréquences ont moins d'importance et ces coefficients peuvent alors être quantifiés de manière moins précise voire ignorés. **[4,5]** Ces coefficients sont ensuite compressés à l'aide de l'algorithme de Huffman avant d'être transmis. **[6]**
+</p>
 <br>
 <br>
 
@@ -68,7 +72,7 @@ Comment identifier et déterminer les mouvements des objets à travers plusieurs
 - Mettre en œuvre un algorithme de compression vidéo.
 
 ## Bibliographie
--
+
 **[1]** https://www.cisco.com/c/dam/m/en_us/solutions/service-provider/vni-forecast-highlights/pdf/Global_Device_Growth_Traffic_Profiles.pdf
 
 <br>
@@ -101,18 +105,16 @@ Interstices, "De Fourier à la compression d’images et de vidéos": Christine 
 <br>
 <br>
 
-<br>
 
 
-Brouillon
-=
-# <br>
+# Brouillon
+
 
 
 ### **[2]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf
 
 - 4.2.2.1.1 Prédiction du point de recherche initial (p139)
-
+(p123) nécessaire car les algo classiques peuvent tomber dans un minimum local donc il faut les influencer par des biais "extérieurs" à une simple recherche
 
 
 
