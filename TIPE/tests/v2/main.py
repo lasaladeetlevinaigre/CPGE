@@ -49,12 +49,12 @@ def displayBlock(b, img):
             tab[j, i] = img[j+y0, i+x0]
 
     #displayTabPixels(tab)
-    plt.imshow(tab[:, :, ::-1])
+    plt.imshow(tab)
     plt.show()
 
 
 def displayImage(img):
-    plt.imshow(img[:, :, ::-1])
+    plt.imshow(img)
     plt.show()
 
 
@@ -90,7 +90,7 @@ def displayImageWithNeighs2(img, b):
                 cv2.putText(temp, text, (text_x, text_y), font, font_scale, font_color, font_thickness)
 
 
-    plt.imshow(temp[:, :, ::-1])
+    plt.imshow(temp)
     plt.show()
 
 def displayImageWithNeighs(img, b):
@@ -122,7 +122,7 @@ def displayImageWithNeighs(img, b):
                 for j in range(hblock):
                     temp[y0+j, x0+i] = [0, 0, 0]
 
-    plt.imshow(temp[:, :, ::-1])
+    plt.imshow(temp)
     plt.show()
 
 
@@ -167,7 +167,7 @@ def displayImageWithBlock(img, highlight=[]):
                 temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    ax.imshow(temp[:, :, ::-1])
+    ax.imshow(temp)
 
     for k in range(nombre_blocks):
         x0, y0 = block2coordTopLeftCorner(k)
@@ -241,7 +241,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 
     fig, ax = plt.subplots(figsize=(8, 6))
 
-    ax.imshow(temp[:, :, ::-1])
+    ax.imshow(temp)
 
     for k in range(nombre_blocks):
 
@@ -379,9 +379,9 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 ###################### FICHIERS #####################
 #####################################################
 
-def extractFramesOfVideo(path, offset=0, nombre=2, pas=1):
+def extractFramesOfVideo(path, offset=0, nombre=2):
     """
-    Retourne {nombre} images successives de la vidéo mp4
+    Retourne {nombre} images succesives de la video mp4
     """
     capture = cv2.VideoCapture(path)
 
@@ -393,13 +393,16 @@ def extractFramesOfVideo(path, offset=0, nombre=2, pas=1):
     # Initialiser l'array pour stocker les frames
     frames = np.empty((nombre,) + (int(capture.get(4)), int(capture.get(3)), 3), dtype=np.uint8)
 
+    capture.set(cv2.CAP_PROP_POS_FRAMES, offset)
+
     for i in range(nombre):
-        capture.set(cv2.CAP_PROP_POS_FRAMES, i * pas + offset)
         ret, frame = capture.read()
+        # capture.set(cv2.CAP_PROP_POS_FRAMES, 10)
+        capture.set(cv2.CAP_PROP_POS_FRAMES, i+offset)
 
         if not ret:
             # La lecture a échoué
-            print(f"Échec de la lecture de la trame {i * pas + offset}.")
+            print(f"Échec de la lecture de la trame {i+offset}.")
             break
 
         frames[i] = frame
@@ -477,18 +480,28 @@ def lire_csv(nom_fichier):
 
 
 
-
 def YCrCb2BGR(image):
+    """
+    Converts numpy image into from YCrCb to BGR color space
+    """
     return cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
 
-
-
 def BGR2YCrCb(image):
+    """
+    Converts numpy image into from BGR to YCrCb color space
+    """
     return cv2.cvtColor(image, cv2.COLOR_YCrCb2BGR)
 
 
-def BGR2GRAY(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -520,12 +533,6 @@ def block2coordTopLeftCorner(block):
     x = (block*wblock)%wframe
     y = ((block*wblock)//wframe)*hblock
     return x, y
-
-def coordTopLeftCorner2block(x, y):
-    block_col = x // wblock
-    block_row = y // hblock
-    block = block_col + block_row * (wframe // wblock)
-    return block
 
 
 def blockAverageColor(b, img):
@@ -651,10 +658,10 @@ def TDL(img1, img2, bref, display=False):
             del points[centre+p]
 
         # Ajoute les 9 cases voisines du centre
-        if step == 0:
-            for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
-                if not isBlockOutside(k):
-                    points.update({k: float("+inf")})
+        # if step == 0:
+        #     for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
+        #         if not isBlockOutside(k):
+        #             points.update({k: float("+inf")})
 
 
         for pt, val in points.items():
@@ -723,91 +730,16 @@ def testTDL(img1, img2):
 
 
 
-def SADAnchors(img1, img2, anchor1, anchor2):
-    x_ref1, y_ref1 = anchor1
-    x_ref2, y_ref2 = anchor2
-
-    diff = [0, 0, 0]
-    size = wblock*hblock
-
-    for i in range(wblock//pas_calcul_difference):
-        for j in range(hblock//pas_calcul_difference):
-
-            x1 = i*pas_calcul_difference+x_ref1
-            y1 = j*pas_calcul_difference+y_ref1
-
-            x2 = i*pas_calcul_difference+x_ref2
-            y2 = j*pas_calcul_difference+y_ref2
-
-            diff[0] += abs( int(img1[y1, x1][0]) - int(img2[y2, x2][0]) )
-            diff[1] += abs( int(img1[y1, x1][1]) - int(img2[y2, x2][1]) )
-            diff[2] += abs( int(img1[y1, x1][2]) - int(img2[y2, x2][2]) )
-
-            # print(diff)
-
-    diff = diff[0] + diff[1] + diff[2]
-
-    return diff
-
-
-def getVector(img1, img2, b_ref, display=False):
-    radius = 20
-
-    u, v = 0, 0
-    mini = float("+inf")
-
-
-    for i in range(-radius, radius+1):
-        for j in range(-radius, radius+1):
-
-            sad = SADAnchors(img1, img2, block2coordTopLeftCorner(b_ref), (i, j))
-            if(sad < overall):
-                print(sad)
-            if sad < mini:
-                mini = sad
-                u, v = i, j
-
-
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.imshow(img2[:, :, ::-1])
-
-    x0, y0 = block2coordTopLeftCorner(b_ref)
-    # Coordonnées de départ pour la flèche (au centre du rectangle)
-    start = (x0, y0)
-
-    x1, y1 = x0+u, y0+v
-    dx, dy = x1-x0, y1-y0
-
-    end = (int(x0+dx), int(y0+dy))
-
-
-    arrow_props = dict(facecolor='white', edgecolor='white', arrowstyle='->', shrinkA=0, lw=0.8)
-    ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
-
-    plt.show()
-
-
-
-    return u, v
-
-
-
-
-
-
-
-
-
 
 
 
 if __name__ == "__main__":
 
-    img1 = readImg("tests/car1.png")
-    img2 = readImg("tests/car2.png")
-    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=0, nombre=2, pas=2)
-    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/sea_shore.mp4", offset=0, nombre=2, pas=1)
+    # img1, img2 = extractFramesOfVideo("tests/8balls.mp4", offset=0, nombre=2)
+    img1 = readImg("tests/gradient31.png")
+    img2 = readImg("tests/gradient33.png")
+
+
 
 
     print("")
@@ -819,8 +751,8 @@ if __name__ == "__main__":
 
     # wframe = 256
     # hframe = 512
-    wblock = 4*3
-    hblock = 4*3
+    wblock = 4
+    hblock = 4
 
     #nombre_blocks = 1600
     nombre_blocks = int((wframe/wblock) * (hframe/hblock))
@@ -831,7 +763,7 @@ if __name__ == "__main__":
     print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
     print(f"Taille block : {wblock}x{hblock}px")
 
-    block_search_radius = round(wframe*0.15)//wblock
+    block_search_radius = round(wframe*0.30)//wblock
     # block_search_radius = 10
     print(f"block_search_radius={block_search_radius}")
 
@@ -858,28 +790,17 @@ if __name__ == "__main__":
 
     displayBlockNumbers = False
 
-    name_test = "crossing"
+    name_test = "gradient"
 
 
 
 
-    k = coordTopLeftCorner2block(832, 305)
-    print(f"phare img1, {k}")
+    displayImageWithBlock(img1, [464])
+    displayImageWithBlock(img2, [464])
+    # displayImageWithBlock(img2, [71, 138])
 
-    displayImageWithBlock(img1, [k, 500])
-    displayImageWithBlock(img2, [k, 500])
-
-    overall = SADAnchors(img1, img2, block2coordTopLeftCorner(k), block2coordTopLeftCorner(k+1))
-    print(getVector(img1, img1, k))
-
-    # cv2.imshow('', BGR2GRAY(img2)-BGR2GRAY(img1))
-    # cv2.waitKey(0)
-
-
-
-
-    # print(TDL(img1, img2, k, display=True))
-    # testTDL(img1, img2)
+    # print(TDL(img1, img2, 464, display=True))
+    testTDL(img1, img2)
 
 
 
