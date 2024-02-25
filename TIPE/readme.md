@@ -109,6 +109,17 @@ Brouillon
 # <br>
 
 
+### **[2]** https://theses.hal.science/tel-00522618/file/PhD_Olivier_Brouard.pdf
+
+- 4.2.2.1.1 Prédiction du point de recherche initial (p139)
+
+
+
+
+
+
+
+
  #### Il est généralement constitué en premier d'une image de référence suivie de plusieurs images intermédiaire, il prend la forme I-B-B-P-B-B-P-B-B
 
 <s> **[2]** https://openaccess.thecvf.com/content_ICCV_2019/papers/Rippel_Learned_Video_Compression_ICCV_2019_paper.pdf (p.2) </s>
