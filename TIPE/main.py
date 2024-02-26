@@ -55,15 +55,16 @@ def displayBlock(b, img):
     plt.show()
 
 
-def displayImage(img):
+def displayImage(img, name="displayImage"):
     plt.imshow(img)
+    plt.title(name)
     plt.show()
 
 
 def displayImageWithNeighs2(img, b):
     neighs = getNeighs(b)
     temp = deepcopy(img)
-    clr_contour = [255, 0, 0]
+    
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
     
@@ -98,7 +99,7 @@ def displayImageWithNeighs2(img, b):
 def displayImageWithNeighs(img, b):
     neighs = getNeighs(b)
     temp = deepcopy(img)
-    clr_contour = [255, 0, 0]
+    
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
     
@@ -138,7 +139,7 @@ def displayImageWithNeighs(img, b):
 
 
 def displayImageWithBlock(img, highlight=[]):
-    clr_contour = [255, 0, 0]
+    
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
 
@@ -148,26 +149,25 @@ def displayImageWithBlock(img, highlight=[]):
         x0, y0 = block2coordTopLeftCorner(k)
 
         if k in highlight:
-            clr_contour = [0, 255, 255]
             for i in range(wblock):
-                temp[y0, i + x0] = clr_contour
+                temp[y0, i + x0] = [255, 0, 0]
                 # temp[y0+1, i + x0] = clr_contour
                 # temp[y0+hblock-2, i + x0] = clr_contour
                 # temp[y0+hblock-1, i + x0] = clr_contour
 
             for i in range(hblock):
-                temp[y0 + i, x0] = clr_contour
+                temp[y0 + i, x0] = [255, 0, 0]
                 # temp[y0 + i, x0+1] = clr_contour
                 # temp[y0 + i, x0+wblock-2] = clr_contour
                 # temp[y0 + i, x0+wblock-1] = clr_contour
 
         else:
-            clr_contour = [255, 0, 0]
+            
             for i in range(wblock):
                 temp[y0, i + x0] = clr_contour
             for i in range(hblock):
                 pass
-                # temp[y0 + i, x0] = clr_contour
+                temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.imshow(temp)
@@ -213,7 +213,7 @@ def displayTabPixels(tableau):
 
 def displayVectorMap2(vectors, img,  saving=False, output_file="output.png"):
     temp = deepcopy(img)
-    clr_contour = [255, 0, 0]
+    
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
 
@@ -395,10 +395,43 @@ def getDCTcoeffs(image, display=False):
 
 
 #####################################################
-####################### STATS #######################
+##################### QUALITE #######################
 #####################################################
 
+def MSE(img_original, img_predicted):
+    """
+    Calcule Mean Squared Error (MSE)
+    """
 
+    # Normalize pixel values to the range [0, 1]
+    img_original = img_original.astype(np.float32) / 255.0
+    img_predicted = img_predicted.astype(np.float32) / 255.0
+
+    mse_channel_R = np.mean((img_original[:, :, 0] - img_predicted[:, :, 0]) ** 2)
+    mse_channel_G = np.mean((img_original[:, :, 1] - img_predicted[:, :, 1]) ** 2)
+    mse_channel_B = np.mean((img_original[:, :, 2] - img_predicted[:, :, 2]) ** 2)
+
+    mse_channels = [mse_channel_R, mse_channel_G, mse_channel_B]
+
+    # Calculate overall MSE (average of channel MSEs)
+    mse_global = np.mean(mse_channels)
+
+    return mse_global, mse_channels
+
+
+
+
+def PSNR(img_original, img_predicted, max_pixel_value=255):
+    """
+    Calcule le Peak Signal-to-Noise Ratio (PSNR)
+    """
+    mse_global, mse_channels = MSE(img_original, img_predicted)
+
+    psnr_channels = (20 * np.log10(max_pixel_value / np.sqrt(mse_channels))).tolist()
+
+    psnr_global = np.mean(psnr_channels)
+
+    return psnr_global, psnr_channels
 
 
 
@@ -808,6 +841,17 @@ def testTDL(img1, img2):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 def SADAnchors(img1, img2, anchor1, anchor2):
     x_ref1, y_ref1 = anchor1
     x_ref2, y_ref2 = anchor2
@@ -821,8 +865,14 @@ def SADAnchors(img1, img2, anchor1, anchor2):
             x1 = i*pas_calcul_difference+x_ref1
             y1 = j*pas_calcul_difference+y_ref1
 
+
             x2 = i*pas_calcul_difference+x_ref2
             y2 = j*pas_calcul_difference+y_ref2
+
+            if x1 < 0 or x1 > wframe or y1 < 0 or y1 > hframe:
+                continue
+            if x2 < 0 or x2 > wframe or y2 < 0 or y2 > hframe:
+                continue
 
             diff[0] += abs( int(img1[y1, x1][0]) - int(img2[y2, x2][0]) )
             diff[1] += abs( int(img1[y1, x1][1]) - int(img2[y2, x2][1]) )
@@ -835,13 +885,20 @@ def SADAnchors(img1, img2, anchor1, anchor2):
     return diff
 
 
+
+
+
 def getVector(img1, img2, b_ref, vectors=[], display=False):
     if display:
-        print(f"{bcolors.OKCYAN}TDL bloc de ref: {b_ref} de coord: {block2coordTopLeftCorner(b_ref)}{bcolors.ENDC}")    
+        print("\n"*2)
+        print("******"*10)
+        print(f"{bcolors.HEADER}        TDL bloc_ref: {b_ref} | coord: {block2coordTopLeftCorner(b_ref)}{bcolors.ENDC}")    
+        print("\n")
 
 
-    median_vector = [0, 0]
-    if vectors != []:
+    median_vector = [float("+inf"), float("+inf")]
+
+    if len(vectors) != 0:
         # haut gauche - haut - haut droite - gauche
         points = {b_ref-nombre_blocs_x-1, b_ref-nombre_blocs_x, b_ref-nombre_blocs_x+1, b_ref-1}
 
@@ -861,22 +918,29 @@ def getVector(img1, img2, b_ref, vectors=[], display=False):
             points.discard(b_ref-nombre_blocs_x+1)
 
 
-        median_vector = np.zeros(2)
-        for k in points:
-            median_vector += vectors[k]
-        median_vector /= len(points)
+        if len(points) != 0:
+            median_vector = [0, 0]
+            for k in points:
+                median_vector[0] = vectors[k][0]
+                median_vector[1] = vectors[k][1]
+            median_vector[0] = round(median_vector[0]/len(points))
+            median_vector[1] = round(median_vector[1]/len(points))
+        else:
+            median_vector = [float("+inf"), float("+inf")]
 
     if display:
         print(f"median_vector: {median_vector}")
 
 
+
+
+
     x0, y0 = block2coordTopLeftCorner(b_ref)
 
-    radius = 16
-    center_origin = x0+median_vector[0], y0+median_vector[1]
+    # center_origin = x0+median_vector[0], y0+median_vector[1]
+    center_origin = (x0, y0)
 
-
-    p = radius
+    p = search_radius
     center = center_origin
     pos = [center_origin] # historique des centre de passage
     while p > 1:
@@ -886,45 +950,51 @@ def getVector(img1, img2, b_ref, vectors=[], display=False):
 
         pos.append(center)
 
-        # relatives = [
-        #     [0, -p], # haut
-        #     [0, +p], # bas
-        #     [0, 0],  # centre
-        #     [-p, 0], # gauche
-        #     [+p, 0], # droite
-        # ]
+        # (dx, dy, poids)
+        relatives = [
+            (0, -p, 1.), # haut
+            (0, +p, 1.), # bas
+            (0, 0, 1.2),  # centre
+            (-p, 0, 1.), # gauche
+            (+p, 0, 1.), # droite
 
-        for i in [-p, 0, +p]:
-            for j in [-p, 0, +p]:
+            # (-p, -p, 1.), # haut gauche
+            # (+p, -p, 1.), # haut droite
+            # (-p, +p, 1.), # bas gauche
+            # (+p, +p, 1.), # bas droite
+        ]
 
-                if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
-                    continue
+        if len(pos) == 2 and median_vector[0] != float("+inf"):
+            # on ajoute le vecteur median
+            dx, dy = median_vector
+            relatives.append((dx, dy, 1.5))
 
-                sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y))
-                if sad < mini:
-                    mini = sad
-                    x = i+x
-                    y = j+y
-
-        if False:
+        if len(pos) == 2:
             # on cherche parmi les neuf blocs autour du centre
             for i in range(-1, 2):
                 for j in range(-1, 2):
-                    if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
-                        continue
+                    relatives.append((i, j, 1.2))
 
-                    sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y))
-                    if sad < mini:
-                        mini = sad
-                        x = i+x
-                        y = j+y
+        best_i, best_j = 0, 0
+        for (i, j, weight) in relatives:
+            if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
+                continue
+
+            # print(x, y, i, j, weight)
+            sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y)) / weight
+            if sad < mini:
+                mini = sad
+                x = i+x
+                y = j+y
+                best_i, best_j = i, j
+
 
         if display:
-            print(f"pas: p={p}")
+            print(f"{bcolors.OKBLUE}pas: p={p} {bcolors.ENDC}")
             print(f"centre: {center}")
-            print(f"meilleure correspondance si centre = {x, y}")
+            print(f"positions comparées: (dx, dy, weight) \n{np.array(relatives)}")
+            print(f"meilleure correspondance si centre = {x, y}, obtenu avec {best_i, best_j}")
             print("--")
-
 
 
         # step 2
@@ -932,6 +1002,8 @@ def getVector(img1, img2, b_ref, vectors=[], display=False):
             p = p//2 # si le centre n a pas evolue ou sil oscille
 
         center = x, y
+
+
 
 
     # step 3
@@ -952,13 +1024,11 @@ def getVector(img1, img2, b_ref, vectors=[], display=False):
 
 
     if display:
-        print(u, v)
-        print(pos)
+        print(f"vecteur trouvé: {u, v}")
+        print(f"centres visités: {pos}")
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.imshow(img2)
 
-        x0, y0 = block2coordTopLeftCorner(b_ref)
-        # Coordonnées de départ pour la flèche (au centre du rectangle)
         start = (x0, y0)
 
         x1, y1 = x0+u, y0+v
@@ -972,19 +1042,80 @@ def getVector(img1, img2, b_ref, vectors=[], display=False):
 
         plt.show()
 
+
     return u, v
 
-def getVectorsField(img1, img2):
-    vectors = np.zeros((nombre_blocs, 2))
+
+
+
+
+
+
+
+
+def getVectorsField(img1, img2, display=False):
+    start_time = time.time()
+
+    vectors = np.zeros((nombre_blocs, 2)).tolist()
 
     for k in range(nombre_blocs):
         vectors[k] = getVector(img1, img2, k, vectors)
-        print(k, block2coordTopLeftCorner(k), vectors[k])
+
+    print(f"temps écoulé calcul: {time.time()-start_time}")
+
+    if display:
+        start_time = time.time()
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.imshow(img2)
+
+        for k in range(nombre_blocs):
+
+            start = block2coordTopLeftCorner(k)
+            x0, y0 = start
+            u, v = vectors[k]
+            dx, dy = u, v
+
+            end = (int(x0+dx), int(y0+dy))
 
 
-    print(vectors)
+            arrow_props = dict(facecolor='white', edgecolor='white', arrowstyle='->', shrinkA=0, lw=0.8)
+            ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
+
+        print(f"temps écoulé affichage: {time.time()-start_time}")
+
+        plt.savefig("vector_field.png")
+        plt.show()
+
+
     return vectors
 
+
+
+
+def reconstructImage(img1, vectors):
+    # Mettre le fond en jaune
+    # reconstructed_image = np.zeros((hframe, wframe, 3), dtype=int)
+    # reconstructed_image[:, :, 0] = 255  # Canal rouge
+    # reconstructed_image[:, :, 1] = 255  # Canal vert
+
+    # Mettre le fond sur l'image precedente
+    reconstructed_image = deepcopy(img1)
+
+    for k in range(nombre_blocs):
+        x1, y1 = block2coordTopLeftCorner(k)
+        dx, dy = vectors[k]
+
+        for i in range(wblock):
+            for j in range(hblock):
+
+                x, y = int(x1+dx+i), int(y1+dy+j)
+
+                if x < 0 or x >= wframe or y < 0 or y >= hframe:
+                    continue
+
+                reconstructed_image[y][x] = img1[y1+j][x1+i]
+
+    return reconstructed_image
 
 
 
@@ -998,17 +1129,13 @@ def getVectorsField(img1, img2):
 
 if __name__ == "__main__":
 
+
     # img1 = readImg("tests/car1.png")
     # img2 = readImg("tests/car2.png")
-    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=0, nombre=2, pas=2)
-    # img1, img2 = extractFramesOfVideo("/users/escud/Desktop/sea_shore.mp4", offset=0, nombre=2, pas=1)
+    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/f1.mp4", offset=110, nombre=2, pas=1)
+    # img1, img2 = extractFramesOfVideo("/users/escud/Desktop/f1.mp4", offset=180, nombre=2, pas=1)
 
     img1,img2 = BGR2RGB(img1), BGR2RGB(img2)
-
-    print("")
-    print("******"*10)
-    print("******"*10)
-    print("")
 
     hframe, wframe, channels = img1.shape
 
@@ -1022,13 +1149,9 @@ if __name__ == "__main__":
     nombre_blocs_x = int((wframe/wblock))
     nombre_blocs_y = int((hframe/hblock))
 
-    print(f"Taille image : {wframe}x{hframe}px")
-    print(f"Nombre de block: {nombre_blocs} ({nombre_blocs_x}x{nombre_blocs_y})")
-    print(f"Taille block : {wblock}x{hblock}px")
 
-    block_search_radius = round(wframe*0.07)//wblock
-    # block_search_radius = 10
-    print(f"block_search_radius={block_search_radius}")
+    block_search_radius = 16 # !!!! plus d'usage
+    search_radius = 16
 
     font_thickness = 1
     font_scale = 0.2
@@ -1037,15 +1160,27 @@ if __name__ == "__main__":
         displayBlockNumbers = True
 
 
-    pas_calcul_difference = 1
+    pas_calcul_difference = 2
 
     pas_quantization = 1
 
+    clr_contour = [255, 255, 255]
 
-    print("")
+
     print("******"*10)
     print("******"*10)
-    print("")
+    print(f"        Taille image : {wframe}x{hframe}px")
+    print(f"        Nombre de block: {nombre_blocs} ({nombre_blocs_x}x{nombre_blocs_y})")
+    print(f"        Taille block : {wblock}x{hblock}px")
+    print(f"        search_radius={search_radius}")
+    print(f"        pas_calcul_difference={pas_calcul_difference}")
+    print("******"*10)
+    print("******"*10)
+    print("\n")
+
+
+
+
 
 
 
@@ -1056,32 +1191,43 @@ if __name__ == "__main__":
     displayBlockNumbers = False
     name_test = "crossing"
 
-    ref = coordTopLeftCorner2block(1035, 356)-2
-    ref = 999
+    ref = coordTopLeftCorner2block(894, 293)
+    ref = coordTopLeftCorner2block(1035, 356) # voiture phare arriere
+    ref = 3540
 
-    conj = TDL(img1, img2, ref)
+    conj = ref
     print(f"conjugué de {ref} est {conj}")
     print(f"conjugué de {block2coordTopLeftCorner(ref)} est {block2coordTopLeftCorner(conj)}")
 
 
 
-    displayImageWithBlock(img1, [ref])
-    displayImageWithBlock(img2, [ref, conj])
-    residu = img2 - img1
-    # displayImage(residu)
+    # displayImageWithBlock(img1, [ref])
+    # displayImageWithBlock(img2, [ref, conj])
 
-    start_time = time.time()
-    u, v = getVector(img1, img2, ref, [], True)
+    
+    # for _ in range(8100):
 
-    print(f"temps écoulé: {time.time()-start_time}")
+    # u, v = getVector(img1, img2, ref, [], True)
 
-    print(u, v)
+    
 
-    # getVectorsField(img1, img2)
-    print(f"temps écoulé: {time.time()-start_time}")
+    vectors = getVectorsField(img1, img2)
+    # vectors = np.ones((nombre_blocs, 2))*8
 
-
-    # print(getDCTcoeffs(residu, True))
+    reconstructed_image = reconstructImage(img1, vectors)
 
 
+    displayImage(reconstructed_image, [ref])
+    
+    residu = img2-reconstructed_image
 
+    displayImage(residu)
+
+    mse = MSE(img2, residu)
+    print(mse)
+    print(PSNR(img2, residu))
+
+
+
+
+    print("\n"*3)
