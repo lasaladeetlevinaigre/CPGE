@@ -6,6 +6,7 @@ import os
 from copy import deepcopy
 import matplotlib.pyplot as plt
 from scipy.fftpack import dct, idct
+import time
 
 
 
@@ -66,7 +67,7 @@ def displayImageWithNeighs2(img, b):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
     
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
         x0, y0 = block2coordTopLeftCorner(k)
         
         for i in range(wblock):
@@ -101,7 +102,7 @@ def displayImageWithNeighs(img, b):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = [0, 0, 0]
     
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
         x0, y0 = block2coordTopLeftCorner(k)
 
 
@@ -143,34 +144,35 @@ def displayImageWithBlock(img, highlight=[]):
 
     temp = deepcopy(img)
 
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
         x0, y0 = block2coordTopLeftCorner(k)
 
         if k in highlight:
             clr_contour = [0, 255, 255]
             for i in range(wblock):
                 temp[y0, i + x0] = clr_contour
-                temp[y0+1, i + x0] = clr_contour
-                temp[y0+hblock-2, i + x0] = clr_contour
-                temp[y0+hblock-1, i + x0] = clr_contour
+                # temp[y0+1, i + x0] = clr_contour
+                # temp[y0+hblock-2, i + x0] = clr_contour
+                # temp[y0+hblock-1, i + x0] = clr_contour
 
             for i in range(hblock):
                 temp[y0 + i, x0] = clr_contour
-                temp[y0 + i, x0+1] = clr_contour
-                temp[y0 + i, x0+wblock-2] = clr_contour
-                temp[y0 + i, x0+wblock-1] = clr_contour
+                # temp[y0 + i, x0+1] = clr_contour
+                # temp[y0 + i, x0+wblock-2] = clr_contour
+                # temp[y0 + i, x0+wblock-1] = clr_contour
 
         else:
             clr_contour = [255, 0, 0]
             for i in range(wblock):
                 temp[y0, i + x0] = clr_contour
             for i in range(hblock):
-                temp[y0 + i, x0] = clr_contour
+                pass
+                # temp[y0 + i, x0] = clr_contour
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.imshow(temp)
 
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
         x0, y0 = block2coordTopLeftCorner(k)
         
         if  displayBlockNumbers:
@@ -209,7 +211,7 @@ def displayTabPixels(tableau):
 
 
 
-def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
+def displayVectorMap2(vectors, img,  saving=False, output_file="output.png"):
     temp = deepcopy(img)
     clr_contour = [255, 0, 0]
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -232,7 +234,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
     colors = [ [0, 0, 0] ]
 
     
-    # for k in range(nombre_blocks):
+    # for k in range(nombre_blocs):
     #     x0, y0 = block2coordTopLeftCorner(k)
         
     #     for i in range(wblock):
@@ -244,7 +246,7 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
 
     ax.imshow(temp)
 
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
 
         if blockAverageColor(k, img1) == [255, 255, 255] and blockAverageColor(k, img2) == [255,255,255]:
             continue
@@ -281,6 +283,37 @@ def displayVectorMap(vectors, img,  saving=False, output_file="output.png"):
     plt.show()
 
     return
+
+
+
+
+def displayVectorMap(vectors, img, saving=False, output_file="vector_map"):
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.imshow(img)
+
+    for k in range(nombre_blocs):
+
+        x0, y0 = block2coordTopLeftCorner(k)
+        # Coordonnées de départ pour la flèche (au centre du rectangle)
+        start = (x0, y0)
+
+        u, v = vectors[k]
+
+        if (u, v) == (0, 0):
+            continue
+
+
+        x1, y1 = x0+u, y0+v
+        dx, dy = x1-x0, y1-y0
+
+        end = (int(x0+dx), int(y0+dy))
+
+
+        arrow_props = dict(facecolor='white', edgecolor='white', arrowstyle='->', shrinkA=0, lw=0.8)
+        ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
+
+    plt.show()
+
 
 
 def getDCTcoeffs(image, display=False):
@@ -593,7 +626,7 @@ def blockAverageColor(b, img):
 
 
 def getNeighs(b1):
-    i, j = b1//nombre_blocks_x, b1%nombre_blocks_x
+    i, j = b1//nombre_blocs_x, b1%nombre_blocs_x
     neigh = []
 
     for cote in range(block_search_radius):
@@ -601,15 +634,15 @@ def getNeighs(b1):
         for x in [-cote, cote]:
             for y in range(-cote, cote+1):
 
-                k = (i+x) * nombre_blocks_x + j+y
-                if k >= 0 and k < nombre_blocks and k%nombre_blocks_x >= j-block_search_radius and k%nombre_blocks_x <= j+block_search_radius and k not in neigh:
+                k = (i+x) * nombre_blocs_x + j+y
+                if k >= 0 and k < nombre_blocs and k%nombre_blocs_x >= j-block_search_radius and k%nombre_blocs_x <= j+block_search_radius and k not in neigh:
                     neigh.append(k)
 
         for x in range(-cote, cote+1):
             for y in [-cote, cote]:
 
-                k = (i+x) * nombre_blocks_x + j+y
-                if k >= 0 and k < nombre_blocks and k%nombre_blocks_x >= j-block_search_radius and k%nombre_blocks_x <= j+block_search_radius and k not in neigh:
+                k = (i+x) * nombre_blocs_x + j+y
+                if k >= 0 and k < nombre_blocs and k%nombre_blocs_x >= j-block_search_radius and k%nombre_blocs_x <= j+block_search_radius and k not in neigh:
                     neigh.append(k)
     return neigh
 
@@ -645,11 +678,11 @@ def SAD(b1, img1, b2, img2):
 
 def buildMotionVector(img1, img2):
 
-    exclus = np.zeros(nombre_blocks, dtype=np.uint8)
-    vecteurs = np.zeros(nombre_blocks)
+    exclus = np.zeros(nombre_blocs, dtype=np.uint8)
+    vecteurs = np.zeros(nombre_blocs)
 
 
-    for k in range(nombre_blocks):
+    for k in range(nombre_blocs):
         if k%100 == 0:
             print(f"vecteurs bloc {k} calculés")
 
@@ -669,7 +702,7 @@ def buildMotionVector(img1, img2):
 
 
 def isBlockOutside(k):
-    return (k < 0) or (k >= nombre_blocks)
+    return (k < 0) or (k >= nombre_blocs)
 
 # Two Dimensional Logarithmic Search
 def TDL(img1, img2, bref, display=False):
@@ -677,30 +710,33 @@ def TDL(img1, img2, bref, display=False):
     centre = bref
     step = 0
 
+    if display:
+        print(f"centre initial : {bref} = ({block2coordTopLeftCorner(bref)})")
+
     while p > 1:
         # Nord - Sud - CENTRE - Ouest - Est
         points = {
-            centre+p*nombre_blocks_x: float("+inf"),
-            centre-p*nombre_blocks_x: float("+inf"),
+            centre+p*nombre_blocs_x: float("+inf"),
+            centre-p*nombre_blocs_x: float("+inf"),
             centre:                   float("+inf"),
             centre-p:                 float("+inf"),
             centre+p:                 float("+inf"),
         }
 
-        if (centre + p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x) or (isBlockOutside(centre + p*nombre_blocks_x)):
-            del points[centre + p*nombre_blocks_x]
+        if (centre + p*nombre_blocs_x)%nombre_blocs_x != (centre%nombre_blocs_x) or (isBlockOutside(centre + p*nombre_blocs_x)):
+            del points[centre + p*nombre_blocs_x]
 
-        if (centre - p*nombre_blocks_x)%nombre_blocks_x != (centre%nombre_blocks_x) or (isBlockOutside(centre - p*nombre_blocks_x)):
-            del points[centre - p*nombre_blocks_x]
+        if (centre - p*nombre_blocs_x)%nombre_blocs_x != (centre%nombre_blocs_x) or (isBlockOutside(centre - p*nombre_blocs_x)):
+            del points[centre - p*nombre_blocs_x]
 
-        if ((centre-p)//nombre_blocks_x != centre//nombre_blocks_x) or isBlockOutside(centre-p):
+        if ((centre-p)//nombre_blocs_x != centre//nombre_blocs_x) or isBlockOutside(centre-p):
             del points[centre-p]
-        if ((centre+p)//nombre_blocks_x != centre//nombre_blocks_x) or isBlockOutside(centre+p):
+        if ((centre+p)//nombre_blocs_x != centre//nombre_blocs_x) or isBlockOutside(centre+p):
             del points[centre+p]
 
         # Ajoute les 9 cases voisines du centre
         if step == 0:
-            for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
+            for k in [centre-nombre_blocs_x-1, centre-nombre_blocs_x, centre-nombre_blocs_x+1, centre-1, centre, centre+1, centre+nombre_blocs_x-1, centre+nombre_blocs_x, centre+nombre_blocs_x+1 ]:
                 if not isBlockOutside(k):
                     points.update({k: float("+inf")})
 
@@ -718,8 +754,9 @@ def TDL(img1, img2, bref, display=False):
                 smallest_pt = pt
 
         if display:
+            print(f"p = {p}")
             print(points)
-            print("centre", smallest_pt)
+            print(f"centre choisi: {smallest_pt} = ({block2coordTopLeftCorner(smallest_pt)})")
             displayImageWithBlock(img2, list(points.keys()))
             # displayImageWithBlock(img2, [smallest_pt])
 
@@ -738,7 +775,7 @@ def TDL(img1, img2, bref, display=False):
     smallest = SAD(bref, img1, centre, img2)
     smallest_pt = centre
 
-    for k in [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ]:
+    for k in [centre-nombre_blocs_x-1, centre-nombre_blocs_x, centre-nombre_blocs_x+1, centre-1, centre, centre+1, centre+nombre_blocs_x-1, centre+nombre_blocs_x, centre+nombre_blocs_x+1 ]:
         if not isBlockOutside(k):
             diff = SAD(bref, img1, k, img2)
 
@@ -748,15 +785,15 @@ def TDL(img1, img2, bref, display=False):
 
     if display:
         print(f"choisi: {smallest_pt}")
-        displayImageWithBlock(img2, [centre-nombre_blocks_x-1, centre-nombre_blocks_x, centre-nombre_blocks_x+1, centre-1, centre, centre+1, centre+nombre_blocks_x-1, centre+nombre_blocks_x, centre+nombre_blocks_x+1 ])
+        displayImageWithBlock(img2, [centre-nombre_blocs_x-1, centre-nombre_blocs_x, centre-nombre_blocs_x+1, centre-1, centre, centre+1, centre+nombre_blocs_x-1, centre+nombre_blocs_x, centre+nombre_blocs_x+1 ])
 
     return smallest_pt
 
 
 
 def testTDL(img1, img2):
-    vecteurs = -np.ones(nombre_blocks)
-    for k in range(nombre_blocks):
+    vecteurs = -np.ones(nombre_blocs)
+    for k in range(nombre_blocs):
         if blockAverageColor(k, img1) != [255,255,255]:
             vecteurs[k] = TDL(img1, img2, k)
             if k%100 == 1:
@@ -798,46 +835,155 @@ def SADAnchors(img1, img2, anchor1, anchor2):
     return diff
 
 
-def getVector(img1, img2, b_ref, display=False):
-    radius = 20
-
-    u, v = 0, 0
-    mini = float("+inf")
+def getVector(img1, img2, b_ref, vectors=[], display=False):
+    if display:
+        print(f"{bcolors.OKCYAN}TDL bloc de ref: {b_ref} de coord: {block2coordTopLeftCorner(b_ref)}{bcolors.ENDC}")    
 
 
-    for i in range(-radius, radius+1):
-        for j in range(-radius, radius+1):
+    median_vector = [0, 0]
+    if vectors != []:
+        # haut gauche - haut - haut droite - gauche
+        points = {b_ref-nombre_blocs_x-1, b_ref-nombre_blocs_x, b_ref-nombre_blocs_x+1, b_ref-1}
 
-            sad = SADAnchors(img1, img2, block2coordTopLeftCorner(b_ref), (i, j))
-            if(sad < overall):
-                print(sad)
-            if sad < mini:
-                mini = sad
-                u, v = i, j
+        # sur la premiere ligne
+        if b_ref < nombre_blocs_x:
+            points.discard(b_ref-nombre_blocs_x-1)
+            points.discard(b_ref-nombre_blocs_x)
+            points.discard(b_ref-nombre_blocs_x+1)
+
+        # sur la premiere colonne
+        if b_ref%nombre_blocs_x == 0:
+            points.discard(b_ref-nombre_blocs_x-1)
+            points.discard(b_ref-1)
+
+        # sur la derniere ligne
+        if b_ref%nombre_blocs_x == nombre_blocs_x-1:
+            points.discard(b_ref-nombre_blocs_x+1)
 
 
+        median_vector = np.zeros(2)
+        for k in points:
+            median_vector += vectors[k]
+        median_vector /= len(points)
 
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.imshow(img2)
+    if display:
+        print(f"median_vector: {median_vector}")
+
 
     x0, y0 = block2coordTopLeftCorner(b_ref)
-    # Coordonnées de départ pour la flèche (au centre du rectangle)
-    start = (x0, y0)
 
-    x1, y1 = x0+u, y0+v
-    dx, dy = x1-x0, y1-y0
-
-    end = (int(x0+dx), int(y0+dy))
+    radius = 16
+    center_origin = x0+median_vector[0], y0+median_vector[1]
 
 
-    arrow_props = dict(facecolor='white', edgecolor='white', arrowstyle='->', shrinkA=0, lw=0.8)
-    ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
+    p = radius
+    center = center_origin
+    pos = [center_origin] # historique des centre de passage
+    while p > 1:
 
-    plt.show()
+        mini = float("+inf")
+        x, y = center
+
+        pos.append(center)
+
+        # relatives = [
+        #     [0, -p], # haut
+        #     [0, +p], # bas
+        #     [0, 0],  # centre
+        #     [-p, 0], # gauche
+        #     [+p, 0], # droite
+        # ]
+
+        for i in [-p, 0, +p]:
+            for j in [-p, 0, +p]:
+
+                if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
+                    continue
+
+                sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y))
+                if sad < mini:
+                    mini = sad
+                    x = i+x
+                    y = j+y
+
+        if False:
+            # on cherche parmi les neuf blocs autour du centre
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
+                        continue
+
+                    sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y))
+                    if sad < mini:
+                        mini = sad
+                        x = i+x
+                        y = j+y
+
+        if display:
+            print(f"pas: p={p}")
+            print(f"centre: {center}")
+            print(f"meilleure correspondance si centre = {x, y}")
+            print("--")
 
 
+
+        # step 2
+        if (x, y) == center or (x, y) in pos:
+            p = p//2 # si le centre n a pas evolue ou sil oscille
+
+        center = x, y
+
+
+    # step 3
+    # on cherche parmi les neuf blocs autour du centre
+
+    best = float("+inf")
+    u, v = 0, 0
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+
+            if (x+i) < 0 or (x+i+wblock) > wframe or (y+j) < 0 or (y+j+hblock) > hframe:
+                continue
+            sad = SADAnchors(img1, img2, (x0, y0), (i+x, j+y))
+            if sad < best:
+                best = sad
+                u, v = (x+i)-x0, (y+j)-y0
+
+
+
+    if display:
+        print(u, v)
+        print(pos)
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.imshow(img2)
+
+        x0, y0 = block2coordTopLeftCorner(b_ref)
+        # Coordonnées de départ pour la flèche (au centre du rectangle)
+        start = (x0, y0)
+
+        x1, y1 = x0+u, y0+v
+        dx, dy = x1-x0, y1-y0
+
+        end = (int(x0+dx), int(y0+dy))
+
+
+        arrow_props = dict(facecolor='white', edgecolor='white', arrowstyle='->', shrinkA=0, lw=0.8)
+        ax.annotate('', xy=end, xytext=start, arrowprops=arrow_props)
+
+        plt.show()
 
     return u, v
+
+def getVectorsField(img1, img2):
+    vectors = np.zeros((nombre_blocs, 2))
+
+    for k in range(nombre_blocs):
+        vectors[k] = getVector(img1, img2, k, vectors)
+        print(k, block2coordTopLeftCorner(k), vectors[k])
+
+
+    print(vectors)
+    return vectors
 
 
 
@@ -868,26 +1014,26 @@ if __name__ == "__main__":
 
     # wframe = 256
     # hframe = 512
-    wblock = 4*2
-    hblock = 4*2
+    wblock = 4*4
+    hblock = 4*4
 
-    #nombre_blocks = 1600
-    nombre_blocks = int((wframe/wblock) * (hframe/hblock))
-    nombre_blocks_x = int((wframe/wblock))
-    nombre_blocks_y = int((hframe/hblock))
+    #nombre_blocs = 1600
+    nombre_blocs = int((wframe/wblock) * (hframe/hblock))
+    nombre_blocs_x = int((wframe/wblock))
+    nombre_blocs_y = int((hframe/hblock))
 
     print(f"Taille image : {wframe}x{hframe}px")
-    print(f"Nombre de block: {nombre_blocks} ({nombre_blocks_x}x{nombre_blocks_y})")
+    print(f"Nombre de block: {nombre_blocs} ({nombre_blocs_x}x{nombre_blocs_y})")
     print(f"Taille block : {wblock}x{hblock}px")
 
-    block_search_radius = round(wframe*0.15)//wblock
+    block_search_radius = round(wframe*0.07)//wblock
     # block_search_radius = 10
     print(f"block_search_radius={block_search_radius}")
 
     font_thickness = 1
     font_scale = 0.2
     displayBlockNumbers = False
-    if nombre_blocks < 2500 and hframe > 10:
+    if nombre_blocs < 2500 and hframe > 10:
         displayBlockNumbers = True
 
 
@@ -910,9 +1056,32 @@ if __name__ == "__main__":
     displayBlockNumbers = False
     name_test = "crossing"
 
-    # displayImage(img1)
-    # displayImage(img2)
+    ref = coordTopLeftCorner2block(1035, 356)-2
+    ref = 999
+
+    conj = TDL(img1, img2, ref)
+    print(f"conjugué de {ref} est {conj}")
+    print(f"conjugué de {block2coordTopLeftCorner(ref)} est {block2coordTopLeftCorner(conj)}")
+
+
+
+    displayImageWithBlock(img1, [ref])
+    displayImageWithBlock(img2, [ref, conj])
     residu = img2 - img1
-    displayImage(residu)
+    # displayImage(residu)
+
+    start_time = time.time()
+    u, v = getVector(img1, img2, ref, [], True)
+
+    print(f"temps écoulé: {time.time()-start_time}")
+
+    print(u, v)
+
+    # getVectorsField(img1, img2)
+    print(f"temps écoulé: {time.time()-start_time}")
+
 
     # print(getDCTcoeffs(residu, True))
+
+
+

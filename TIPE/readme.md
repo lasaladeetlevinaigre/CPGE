@@ -107,6 +107,18 @@ Interstices, "De Fourier à la compression d’images et de vidéos": Christine 
 
 
 
+
+## Exemples
+##### getVector (sans TDL)
+	video: crossing.mp4
+	frames: 0 - 1
+	coords: 1032, 352
+
+## Amélioration
+- usage de macroblocs pour déterminer plus rapidement le vecteur de déplacement des blocs internes
+
+
+
 # Brouillon
 
 
