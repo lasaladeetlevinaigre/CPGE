@@ -529,7 +529,7 @@ def readImg(path):
     return cv2.imread(path)
 
 
-def images2Video(folder_path, fps=2):
+def imagesPath2Video(folder_path, fps=2):
     """
     Converti toutes les images .png dans un dossier (DANS L ORDRE) en une video mp4
     """
@@ -553,15 +553,15 @@ def images2Video(folder_path, fps=2):
     output_video.release()
 
 
-def writeImage(tab, name):
+def writeImage(tab, path):
     width, height = len(tab[0]), len(tab)
     image = np.zeros((height, width, 3), dtype=np.uint8)
     for x in range(width-1):
         for y in range(height-1):
             image[y, x] = tab[y, x]
 
-    cv2.imwrite(f'{name}.png', image)
-    print(f"{name} générée (writeImage 100% des points) ({width}x{height})")
+    cv2.imwrite(f'{path}', image)
+    print(f"{path} générée (100% des points)")
 
 
 def writeImage2(tab, name):
@@ -590,6 +590,24 @@ def lire_csv(nom_fichier):
         tableau_numpy = np.array([float(valeur) for valeur in ligne])
     
     return tableau_numpy
+
+
+
+def images2videoMP4(images, path, fps=2):
+    height, width, _ = images[0].shape
+
+
+    output_video = cv2.VideoWriter(f"{path}.mp4", cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+
+    # Ajout des images à la vidéo
+    for img in images:
+        output_video.write(img)
+
+    output_video.release()
+
+    print(f"écriture video {path}.mp4, {len(images)} images, {fps}fps")
+
+    return True
 
 
 
@@ -1060,7 +1078,7 @@ def getVectorsField(img1, img2, display=False):
 
     vectors = np.zeros((nombre_blocs, 2)).tolist()
 
-    for k in range(nombre_blocs-nombre_blocs_x):
+    for k in range(nombre_blocs):
         vectors[k] = getVector(img1, img2, k, vectors)
 
     print(f"temps calcul vecteurs: {time.time()-start_time}")
@@ -1094,7 +1112,7 @@ def getVectorsField(img1, img2, display=False):
 
 
 
-def reconstructImage(img1, vectors):
+def applyVectors(img1, vectors):
     # Mettre le fond en jaune
     # reconstructed_image = np.zeros((hframe, wframe, 3), dtype=int)
     # reconstructed_image[:, :, 0] = 255  # Canal rouge
@@ -1189,15 +1207,22 @@ def str2Vectors(txt):
 
 if __name__ == "__main__":
 
+    taille_gop = 15
+    # Image de ref incluse
+
 
     # img1 = readImg("tests/car1.png")
     # img2 = readImg("tests/car2.png")
-    img1, img2 = extractFramesOfVideo("/users/escud/Desktop/f1.mp4", offset=180, nombre=2, pas=1)
-    # img1, img2 = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=180*2, nombre=2, pas=1)
 
-    img1,img2 = BGR2RGB(img1), BGR2RGB(img2)
+    video_path = "/users/escud/Desktop/f1.mp4"
+    gop = extractFramesOfVideo(video_path, offset=180, nombre=taille_gop, pas=1)
 
-    hframe, wframe, channels = img1.shape
+    # gop = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=180*2, nombre=2, pas=1)
+
+    for i in range(len(gop)):
+        gop[i] = BGR2RGB(gop[i])
+
+    hframe, wframe, channels = gop[0].shape
 
     # wframe = 256
     # hframe = 512
@@ -1220,20 +1245,34 @@ if __name__ == "__main__":
         displayBlockNumbers = True
 
 
-    pas_calcul_difference = 4
+    pas_calcul_difference = 4 
 
     pas_quantization = 1
 
     clr_contour = [255, 255, 255]
 
 
+
+    displayBlockNumbers = False
+    name_test = "f1_2"
+
+    test_path = f"tests/{name_test}"
+    if not os.path.exists(test_path):
+        os.makedirs(test_path)
+
+
+
     print("******"*10)
     print("******"*10)
+    print(f"        Vidéo test: {video_path}")
+    print(f"        Nom test: {name_test}")
+    print(f"        FPS video test: {cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)}")
+    print(f"        Nombre d'images dans GOP: {len(gop)}")
     print(f"        Taille image : {wframe}x{hframe}px")
     print(f"        Nombre de block: {nombre_blocs} ({nombre_blocs_x}x{nombre_blocs_y})")
     print(f"        Taille block : {wblock}x{hblock}px")
-    print(f"        search_radius={search_radius}")
-    print(f"        pas_calcul_difference={pas_calcul_difference}")
+    print(f"        search_radius={search_radius}px")
+    print(f"        pas_calcul_difference: tt les {pas_calcul_difference}px")
     print("******"*10)
     print("******"*10)
     print("\n")
@@ -1248,44 +1287,69 @@ if __name__ == "__main__":
 
 
 
-    displayBlockNumbers = False
-    name_test = "crossing"
 
-    ref = coordTopLeftCorner2block(894, 293)
-    ref = coordTopLeftCorner2block(1035, 356) # voiture phare arriere
-    ref = 3540
+    for i, img in enumerate(gop):
+        # displayImage(img, f"image {i}")
+        writeImage(gop[i], f"{test_path}/original{i}.png")
 
-    conj = ref
-    # print(f"conjugué de {ref} est {conj}")
-    # print(f"conjugué de {block2coordTopLeftCorner(ref)} est {block2coordTopLeftCorner(conj)}")
-    print(f"SUIVI: bloc {ref} ({block2coordTopLeftCorner(ref)})")
+
+    vectors = np.zeros((len(gop)-1, nombre_blocs, 2))
+    for i in range(len(gop)-1):
+        vectors[i] = getVectorsField(gop[0], gop[i+1], display=False)
 
 
 
-    # displayImageWithBlock(img1, [ref])
-    # displayImageWithBlock(img2, [ref, conj])
+    predicted_images = np.zeros_like(gop)
+    predicted_images[0] = deepcopy(gop[0])
+
+    for i in range(len(gop)-1):
+        predicted_images[i+1] = applyVectors(gop[0], vectors[i])
+
+
+
+    for i in range(len(gop)):
+        writeImage(predicted_images[i], f"{test_path}/predicted{i}.png")
+        residu = gop[i]-predicted_images[i]
+
+        # residu = DCT(residu)
+
+        writeImage(residu, f"{test_path}/residu{i}.png")
+
+
+
+
+    images2videoMP4(predicted_images, f"{test_path}/predicted", 1)
 
     
-    # for _ in range(8100):
 
-    # u, v = getVector(img1, img2, ref, [], True)
+
+
+
+
+
+
+    # ref = coordTopLeftCorner2block(103, 708)
+    # displayImageWithBlock(gop[2], [ref])
+    # u, v = getVector(gop[1-1], gop[2-1], ref, [], False)
+    # print(u, v)
+    # getVectorsField(gop[0], gop[1], True)
 
     
 
-    vectors = getVectorsField(img1, img2, display=False)
-    # vectors = np.ones((nombre_blocs, 2))*64
+    # vectors = getVectorsField(img1, img2, display=False)
+    # # vectors = np.ones((nombre_blocs, 2))*64
 
-    reconstructed_image = reconstructImage(img1, vectors)
+    # reconstructed_image = applyVectors(img1, vectors)
 
 
     # displayImage(reconstructed_image, [ref])
     
-    residu = img2-reconstructed_image
+    # residu = img2-reconstructed_image
 
     # displayImage(residu)
 
-    print(f"MSE du résidu: {MSE(img2, residu)[0]}")
-    print(f"PSNR du résidu: {PSNR(img2, residu)[0]}")
+    # print(f"MSE du résidu: {MSE(img2, residu)[0]}")
+    # print(f"PSNR du résidu: {PSNR(img2, residu)[0]}")
 
     # displayImage(reconstructed_image+residu, "reconstructed_image+residu")
 
@@ -1294,17 +1358,17 @@ if __name__ == "__main__":
 
 
 
-    print("\n"+"******"*10)
-    print("******"*10)
+    # print("\n"+"******"*10)
+    # print("******"*10)
 
-     # = array_to_string(vectors)
-    vectors_txt = vectors2Str(vectors)
-    print(vectors_txt)
+    #  # = array_to_string(vectors)
+    # vectors_txt = vectors2Str(vectors)
+    # print(vectors_txt)
 
-    print("\n"*3)
+    # print("\n"*3)
 
-    vectors_rec = str2Vectors(vectors_txt)
-    print(vectors_rec)
+    # vectors_rec = str2Vectors(vectors_txt)
+    # print(vectors_rec)
 
     # huffmanCode, compressed_text = compress(vectors_txt)
     # print('Char | Huffman code')

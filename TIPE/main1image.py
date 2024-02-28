@@ -7,7 +7,9 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 from scipy.fftpack import dct, idct
 import time
+import sys
 
+from huffman import compress, decompress
 
 
 class bcolors:
@@ -1118,6 +1120,64 @@ def reconstructImage(img1, vectors):
     return reconstructed_image
 
 
+def array_to_string(array):
+    return ';'.join(','.join(map(str, tup)) for tup in array)
+
+def string_to_array(text):
+    if not text:
+        return []
+
+    tuple_strings = text.split(';')
+    array = [tuple(map(float, tup.split(','))) for tup in tuple_strings]
+    return array
+
+
+def vectors2Str(vectors):
+    txt = ""
+    nb_zero = 0
+    for (x, y) in vectors:
+        if x == 0 and y == 0:
+            nb_zero += 1
+        else:
+            if nb_zero != 0:
+                # on ajoute les zeros trouvés avant
+                txt += str(nb_zero)+";"
+                nb_zero = 0
+
+            txt += str(x) + "," + str(y) + ";"
+    return txt
+
+
+def str2Vectors(txt):
+    temp = txt.split(";")
+    vectors = np.ones((nombre_blocs, 2))
+
+    i = 0
+
+    for elemnt in temp:
+        if ',' in elemnt:
+            # doublet de valeurs
+            x, y = elemnt.split(",")
+            vectors[i] = (float(x), float(y))
+            i += 1
+
+        else:
+            # print(int(elemnt))
+            # plusieurs zero / ou un
+            nb_zero = int(elemnt)
+            for k in range(nb_zero):
+                vectors[i] = (0., 0.)
+                i +=1
+
+
+
+    return vectors
+
+
+
+
+
+
 
 
 
@@ -1212,24 +1272,51 @@ if __name__ == "__main__":
 
     
 
-    vectors = getVectorsField(img1, img2, display=True)
-    # vectors = np.ones((nombre_blocs, 2))*8
+    # vectors = getVectorsField(img1, img2, display=False)
+    # # vectors = np.ones((nombre_blocs, 2))*64
 
-    reconstructed_image = reconstructImage(img1, vectors)
+    # reconstructed_image = reconstructImage(img1, vectors)
 
 
-    displayImage(reconstructed_image, [ref])
+    # displayImage(reconstructed_image, [ref])
     
-    residu = img2-reconstructed_image
+    # residu = img2-reconstructed_image
 
-    displayImage(residu)
+    # displayImage(residu)
 
-    print(f"MSE du résidu: {MSE(img2, residu)[0]}")
-    print(f"PSNR du résidu: {PSNR(img2, residu)[0]}")
+    # print(f"MSE du résidu: {MSE(img2, residu)[0]}")
+    # print(f"PSNR du résidu: {PSNR(img2, residu)[0]}")
 
-    displayImage(reconstructed_image+residu)
+    # displayImage(reconstructed_image+residu, "reconstructed_image+residu")
 
 
 
+
+
+
+    # print("\n"+"******"*10)
+    # print("******"*10)
+
+    #  # = array_to_string(vectors)
+    # vectors_txt = vectors2Str(vectors)
+    # print(vectors_txt)
+
+    # print("\n"*3)
+
+    # vectors_rec = str2Vectors(vectors_txt)
+    # print(vectors_rec)
+
+    # huffmanCode, compressed_text = compress(vectors_txt)
+    # print('Char | Huffman code')
+    # print('----------------------')
+    # for char, code in huffmanCode.items():
+    #     print('%-4r |%12s' % (char, code))
+
+
+    # print(sys.getsizeof(vectors))
+    # print(sys.getsizeof(''.join(format(ord(char), '08b') for char in vectors_txt)))
+    # print(sys.getsizeof(compressed_text))
 
     print("\n"*3)
+
+    # print(string_to_array(vectors_txt))
