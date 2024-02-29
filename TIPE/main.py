@@ -318,52 +318,6 @@ def displayVectorMap(vectors, img, saving=False, output_file="vector_map"):
 
 
 
-def getDCTcoeffs(image, display=False):
-    """
-    A partir d'une image RGB !! 
-    """
-    # Convert the image to float32
-    image_float32 = image.astype(np.float32) / 255.0
-
-    # Display the original RGB image
-    if display:
-        plt.subplot(3, 3, 4)
-        plt.imshow(image)
-        plt.title('Original RGB Image')
-
-    # Apply 2D DCT to each color channel
-    dct_image = np.zeros_like(image_float32)
-    for i in range(3):  # Loop over R, G, B channels
-        dct_image[:, :, i] = dct(dct(image_float32[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
-
-    dct_image2 = np.round(dct_image/pas_quantization).astype(int)
-
-    # Display the DCT coefficients for each channel
-    if display:
-        RGB = ["R", "G", "B"]
-        reconstructed_image = np.zeros_like(image)
-
-        for i in range(3):  # Boucler sur les canaux R, G, B
-            plt.subplot(3, 3, i*3+2)
-            plt.imshow(np.log(np.abs(dct_image[:, :, i]) + 1), cmap='gray')  # Log-scaled pour une meilleure visualisation
-            plt.title(f'DCT Coefficients (Canal {RGB[i]})')
-
-
-            reconstructed_image[:, :, i] = idct(idct(dct_image[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
-
-        # Clipper les valeurs pour les ramener dans la plage [0, 1]
-        reconstructed_image = np.clip(reconstructed_image, 0, 1)*255
-
-        plt.subplot(3, 3, 6)
-        plt.imshow(reconstructed_image)
-        plt.title('Reconstructed RGB Image')
-
-        plt.show()
-
-    return dct_image2
-
-
-
 
 
 
@@ -438,12 +392,79 @@ def PSNR(img_original, img_predicted, max_pixel_value=255):
 
 
 
+def clip(img, a, b):
+    new = np.zeros_like(img)
+    maxi = np.max(img, axis=(0, 1))  # Trouver les valeurs maximales pour chaque canal
+
+    for i in range(3):
+        new[:, :, i] = img[:, :, i] * 255 / maxi[i]
+
+    return new
 
 
+def getDCTcoeffs(image, display=False):
+    # Convert the image to float32
+    image_float32 = image.astype(np.float32)
+
+    # Display the original RGB image
+    if display:
+        plt.subplots(figsize=(9, 7))
+        plt.subplot(3, 3, 4)
+        plt.imshow(image)
+        plt.title('Original avant DCT')
+
+    # Apply 2D DCT to each color channel
+    dct_image = np.zeros_like(image_float32)
+    for i in range(3):  # Loop over R, G, B channels
+        dct_image[:, :, i] = dct(dct(image_float32[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
+
+    # Quantize the data
+    quantized_img = np.zeros_like(dct_image)
+
+    # Apply different quantization steps for low and high frequencies
+    pas_quantization = np.ones_like(dct_image) * pas_quantization_high  # Default to high frequencies
+    pas_quantization[:hframe//2, :wframe//2, :] = pas_quantization_low  # Low frequencies (adjust as needed)
+
+    quantized_img = np.round(dct_image / pas_quantization)
+
+    # quantized_img[hframe-10:, :, :] = [0, 0, 0]
+    # quantized_img[:, wframe-10:, :] = [0, 0, 0]
+
+    if display:
+        # Display the DCT coefficients for each channel
+        RGB = ["R", "G", "B"]
+        reconstructed_image = np.zeros_like(image)
+
+        for i in range(3):  # Loop over R, G, B channels
+            plt.subplot(3, 3, i*3+2)
+            plt.imshow(np.log(np.abs(quantized_img[:, :, i]) + 1), cmap='gray')
+            plt.title(f'DCT Coefficients (Channel {RGB[i]})')
+
+            # Inverse DCT with different quantization steps
+            reconstructed_image[:, :, i] = idct(idct(quantized_img[:, :, i] * pas_quantization[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
+
+        plt.subplot(3, 3, 6)
+        plt.imshow(reconstructed_image)
+        plt.title('apres DCT et quantization')
+
+        plt.show()
+
+    return quantized_img
 
 
+def getResidu(quantized_img, display=False):
+    # Inverse quantization
+    dct_image = quantized_img * pas_quantization_low
 
+    dct_image[:hframe//2, :wframe//2, :] = quantized_img[:hframe//2, :wframe//2, :] * pas_quantization_high
 
+    # Inverse DCT to obtain the original image
+    reconstructed_image = np.zeros_like(quantized_img)
+
+    for i in range(3):  # Loop over R, G, B channels
+        reconstructed_image[:, :, i] = idct(idct(dct_image[:, :, i], axis=0, norm='ortho'), axis=1, norm='ortho')
+
+    return np.clip(reconstructed_image, 0, 255).astype(np.uint8)
 
 
 
@@ -626,6 +647,14 @@ def YCrCb2RGB(image):
 
 def RGB2GRAY(image):
     return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+
+
+
+
+
+
+
 
 
 
@@ -1138,6 +1167,69 @@ def applyVectors(img1, vectors):
     return reconstructed_image
 
 
+
+
+
+
+
+
+def compressVideo(gop, writing = False):
+    vectors = np.zeros((len(gop), nombre_blocs, 2))
+    predicted_images = np.zeros_like(gop)
+    residus = np.zeros_like(gop)
+    coeffs_residus = np.zeros_like(gop)
+    finales = np.zeros_like(gop)
+
+    for i in range(len(gop)):
+        if writing:
+            writeImage(gop[i], f"{test_path}/original{i}.png")  
+
+        if i == 0:
+            # image de référence
+            predicted_images[0] = gop[0]
+            vectors[0] = np.zeros((nombre_blocs, 2))
+            finales[0] = np.zeros((hframe, wframe, 3))
+            continue
+
+
+        vectors[i] = getVectorsField(gop[0], gop[i], display=False)
+        
+        predicted_images[i] = applyVectors(gop[0], vectors[i])
+
+        if writing:
+            writeImage(predicted_images[i], f"{test_path}/predicted{i}.png")
+
+        residu = gop[i]-predicted_images[i]
+        residus[i] = residu
+        if writing:
+            writeImage(residu, f"{test_path}/residu{i}.png")
+
+        coeffs = getDCTcoeffs(residu, True)
+        coeffs_residus[i] = coeffs
+    
+        client_residu = getResidu(coeffs)
+        if writing:
+            writeImage(client_residu, f"{test_path}/residu_idct{i}.png")
+
+
+        finale = predicted_images[i]+client_residu
+        finales[i] = deepcopy(finale)
+        if writing:
+            writeImage(finale, f"{test_path}/finale{i}.png")
+
+
+    if writing:
+        images2videoMP4(predicted_images, f"{test_path}/predicted", 1)
+        images2videoMP4(finales, f"{test_path}/finale", 1)
+
+    return vectors, predicted_images, residus, coeffs_residus, finales
+
+
+
+
+
+
+
 def array_to_string(array):
     return ';'.join(','.join(map(str, tup)) for tup in array)
 
@@ -1163,6 +1255,12 @@ def vectors2Str(vectors):
                 nb_zero = 0
 
             txt += str(x) + "," + str(y) + ";"
+
+    # si on termine par des 0
+    if nb_zero != 0:
+        txt += str(nb_zero)+";"
+        nb_zero = 0
+
     return txt
 
 
@@ -1171,8 +1269,10 @@ def str2Vectors(txt):
     vectors = np.ones((nombre_blocs, 2))
 
     i = 0
-
     for elemnt in temp:
+        if elemnt == '':
+            return vectors
+
         if ',' in elemnt:
             # doublet de valeurs
             x, y = elemnt.split(",")
@@ -1180,13 +1280,11 @@ def str2Vectors(txt):
             i += 1
 
         else:
-            # print(int(elemnt))
-            # plusieurs zero / ou un
+            # plusieurs zero / ou un seul
             nb_zero = int(elemnt)
             for k in range(nb_zero):
                 vectors[i] = (0., 0.)
                 i +=1
-
 
 
     return vectors
@@ -1207,27 +1305,28 @@ def str2Vectors(txt):
 
 if __name__ == "__main__":
 
-    taille_gop = 15
+    taille_gop = 2
     # Image de ref incluse
 
 
     # img1 = readImg("tests/car1.png")
     # img2 = readImg("tests/car2.png")
 
-    video_path = "/users/escud/Desktop/f1.mp4"
-    gop = extractFramesOfVideo(video_path, offset=180, nombre=taille_gop, pas=1)
+    video_path = "/users/escud/Desktop/crossing.mp4"
+    gop = extractFramesOfVideo(video_path, offset=0, nombre=taille_gop, pas=2)
 
     # gop = extractFramesOfVideo("/users/escud/Desktop/crossing.mp4", offset=180*2, nombre=2, pas=1)
 
     for i in range(len(gop)):
-        gop[i] = BGR2RGB(gop[i])
+        # gop[i] = BGR2RGB(gop[i])
+        pass
 
     hframe, wframe, channels = gop[0].shape
 
     # wframe = 256
     # hframe = 512
-    wblock = 4*4
-    hblock = 4*4
+    wblock = 4*2
+    hblock = 4*2
 
     #nombre_blocs = 1600
     nombre_blocs = int((wframe/wblock) * (hframe/hblock))
@@ -1245,16 +1344,17 @@ if __name__ == "__main__":
         displayBlockNumbers = True
 
 
-    pas_calcul_difference = 4 
+    pas_calcul_difference = 2
 
-    pas_quantization = 1
+    pas_quantization_low = 1
+    pas_quantization_high = 1
 
     clr_contour = [255, 255, 255]
 
 
 
     displayBlockNumbers = False
-    name_test = "f1_2"
+    name_test = "test"
 
     test_path = f"tests/{name_test}"
     if not os.path.exists(test_path):
@@ -1273,73 +1373,63 @@ if __name__ == "__main__":
     print(f"        Taille block : {wblock}x{hblock}px")
     print(f"        search_radius={search_radius}px")
     print(f"        pas_calcul_difference: tt les {pas_calcul_difference}px")
+    print(f"        pas_quantization: BF:{pas_quantization_low} HF:{pas_quantization_high}")
     print("******"*10)
     print("******"*10)
     print("\n")
 
+    with open(f"{test_path}/parametres.txt", 'w') as f:
+        f.write(f"Vidéo test: {video_path}\n")
+        f.write(f"Nom test: {name_test}\n")
+        f.write(f"FPS vidéo test: {cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)}\n")
+        f.write(f"Nombre d'images dans GOP: {len(gop)}\n")
+        f.write(f"Taille image: {wframe}x{hframe}px\n")
+        f.write(f"Nombre de blocs: {nombre_blocs} ({nombre_blocs_x}x{nombre_blocs_y})\n")
+        f.write(f"Taille block: {wblock}x{hblock}px\n")
+        f.write(f"search_radius={search_radius}px\n")
+        f.write(f"pas_calcul_difference: toutes les {pas_calcul_difference} images\n")
+        f.write(f"pas_quantization: BF:{pas_quantization_low} HF:{pas_quantization_high}\n")
 
 
 
 
 
+    vectors, _, _, coeffs_residus, _= compressVideo(gop, writing=True)
+
+    for i in range(1, len(gop)):
+        print(vectors[i].nbytes)
+        txt = vectors2Str(vectors[i])
+        print(sys.getsizeof(txt))
 
 
 
+    # # ref = coordTopLeftCorner2block(103, 708)
+    # # displayImageWithBlock(gop[1], [ref])
+    # # # u, v = getVector(gop[1-1], gop[2-1], ref, [], False)
+    # # # print(u, v)
+    # v = getVectorsField(gop[0], gop[1], False)
+    # reconstructed_image = applyVectors(gop[1], v)
+    # displayImage(reconstructed_image, "reconstructed_image")
 
+    # residu = gop[1]- reconstructed_image
+    # coeffs = getDCTcoeffs(residu, True)
 
+    # client_residu = getResidu(coeffs)
 
-    for i, img in enumerate(gop):
-        # displayImage(img, f"image {i}")
-        writeImage(gop[i], f"{test_path}/original{i}.png")
+    # displayImage(client_residu, "client_residu")
 
+    # finale = reconstructed_image+client_residu
+    # displayImage(finale, "finale")
 
-    vectors = np.zeros((len(gop)-1, nombre_blocs, 2))
-    for i in range(len(gop)-1):
-        vectors[i] = getVectorsField(gop[0], gop[i+1], display=False)
-
-
-
-    predicted_images = np.zeros_like(gop)
-    predicted_images[0] = deepcopy(gop[0])
-
-    for i in range(len(gop)-1):
-        predicted_images[i+1] = applyVectors(gop[0], vectors[i])
-
-
-
-    for i in range(len(gop)):
-        writeImage(predicted_images[i], f"{test_path}/predicted{i}.png")
-        residu = gop[i]-predicted_images[i]
-
-        # residu = DCT(residu)
-
-        writeImage(residu, f"{test_path}/residu{i}.png")
-
-
-
-
-    images2videoMP4(predicted_images, f"{test_path}/predicted", 1)
 
     
 
 
 
-
-
-
-
-    # ref = coordTopLeftCorner2block(103, 708)
-    # displayImageWithBlock(gop[2], [ref])
-    # u, v = getVector(gop[1-1], gop[2-1], ref, [], False)
-    # print(u, v)
-    # getVectorsField(gop[0], gop[1], True)
-
-    
 
     # vectors = getVectorsField(img1, img2, display=False)
     # # vectors = np.ones((nombre_blocs, 2))*64
 
-    # reconstructed_image = applyVectors(img1, vectors)
 
 
     # displayImage(reconstructed_image, [ref])

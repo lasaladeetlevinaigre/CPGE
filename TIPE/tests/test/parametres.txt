@@ -1,0 +1,10 @@
+Vidéo test: /users/escud/Desktop/crossing.mp4
+Nom test: test
+FPS vidéo test: 29.97002997002997
+Nombre d'images dans GOP: 2
+Taille image: 640x360px
+Nombre de blocs: 3600 (80x45)
+Taille block: 8x8px
+search_radius=16px
+pas_calcul_difference: toutes les 2 images
+pas_quantization: BF:1 HF:1

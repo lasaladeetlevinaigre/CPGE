@@ -1,0 +1,10 @@
+Vidéo test: /users/escud/Desktop/f1.mp4
+Nom test: f1_3
+FPS vidéo test: 50.0
+Nombre d'images dans GOP: 6
+Taille image: 1280x720px
+Nombre de blocs: 3600 (80x45)
+Taille block: 16x16px
+search_radius=16px
+pas_calcul_difference: toutes les 4 images
+pas_quantization: BF:1 HF:1
